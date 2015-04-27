@@ -108,7 +108,7 @@ def create_table_command():
 CREATE TABLE accident(
 id                      BIGINT PRIMARY KEY  NOT NULL,
 country                 TEXT                NOT NULL,
-timestamp               TIMESTAMPTZ         NOT NULL,
+timestamp               TIMESTAMP           NOT NULL,
 day_of_week             INT                 NOT NULL,
 latitude                NUMERIC(13,10)      NOT NULL,
 longitude               NUMERIC(13,10)      NOT NULL,
