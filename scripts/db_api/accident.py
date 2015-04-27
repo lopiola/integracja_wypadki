@@ -10,6 +10,7 @@ from psycopg2 import connect
 import common
 
 constraints = {
+    'country': ['USA', 'GB'],
     'relation_to_junction': ['UNKNOWN'],
     'road_class': ['UNKNOWN'],
     'surface_cond': ['UNKNOWN'],
@@ -18,11 +19,13 @@ constraints = {
     'other_conditions': ['UNKNOWN']
 }
 
+
 def new(id,
+        country,
         timestamp,
         day_of_week,
         latitude,
-        longtitude,
+        longitude,
         persons_count,
         fatalities_count,
         vehicles_count,
@@ -39,10 +42,11 @@ def new(id,
         other_conditions='UNKNOWN'):
     accident = {
         'id': id,
+        'country': country,
         'timestamp': timestamp,
         'day_of_week': day_of_week,
         'latitude': latitude,
-        'longtitude': longtitude,
+        'longitude': longitude,
         'persons_count': persons_count,
         'fatalities_count': fatalities_count,
         'vehicles_count': vehicles_count,
@@ -68,7 +72,7 @@ def new(id,
     return accident
 
 
-def add(accident_list):
+def insert(accident_list):
     if not isinstance(accident_list, list):
         accident_list = [accident_list]
     user = common.get_user()
@@ -84,14 +88,31 @@ def add(accident_list):
     con.close()
 
 
+def delete(id_list):
+    if not isinstance(id_list, list):
+        id_list = [id_list]
+    user = common.get_user()
+    database = common.get_db_name()
+    con = connect(user=user, database=database)
+    cur = con.cursor()
+
+    for acc_id in id_list:
+        cur.execute(delete_command(acc_id))
+
+    cur.close()
+    con.commit()
+    con.close()
+
+
 def create_table_command():
     return '''
 CREATE TABLE accident(
-id                      INT PRIMARY KEY     NOT NULL,
+id                      BIGINT PRIMARY KEY  NOT NULL,
+country                 TEXT                NOT NULL,
 timestamp               TIMESTAMPTZ         NOT NULL,
 day_of_week             INT                 NOT NULL,
 latitude                NUMERIC(13,10)      NOT NULL,
-longtitude              NUMERIC(13,10)      NOT NULL,
+longitude               NUMERIC(13,10)      NOT NULL,
 persons_count           INT                 NOT NULL,
 fatalities_count        INT                 NOT NULL,
 vehicles_count          INT                 NOT NULL,
@@ -114,10 +135,11 @@ def insert_command(accident):
     command = '''
 INSERT INTO accident VALUES (
 {id},
+'{country}',
 {timestamp},
 {day_of_week},
 {latitude},
-{longtitude},
+{longitude},
 {persons_count},
 {fatalities_count},
 {vehicles_count},
@@ -126,20 +148,21 @@ INSERT INTO accident VALUES (
 {rain},
 {wind},
 {fog},
-{relation_to_junction},
-{road_class},
-{surface_cond},
-{lighting},
-{traffic_control},
-{other_conditions},
+'{relation_to_junction}',
+'{road_class}',
+'{surface_cond}',
+'{lighting}',
+'{traffic_control}',
+'{other_conditions}'
 );
 '''
     command = command.format(
         id=accident['id'],
+        country=accident['country'],
         timestamp=accident['timestamp'],
         day_of_week=accident['day_of_week'],
         latitude=accident['latitude'],
-        longtitude=accident['longtitude'],
+        longitude=accident['longitude'],
         persons_count=accident['persons_count'],
         fatalities_count=accident['fatalities_count'],
         vehicles_count=accident['vehicles_count'],
@@ -156,3 +179,8 @@ INSERT INTO accident VALUES (
         other_conditions=accident['other_conditions']
     )
     return command
+
+
+def delete_command(acc_id):
+    command = '''DELETE FROM accident WHERE id = {id}'''
+    return command.format(id=acc_id)
