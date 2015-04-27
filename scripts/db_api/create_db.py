@@ -23,3 +23,4 @@ cur.execute('CREATE DATABASE ' + database)
 cur.close()
 con.close()
 
+

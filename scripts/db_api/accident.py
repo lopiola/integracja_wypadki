@@ -12,6 +12,10 @@ import common
 constraints = {
     'country': ['USA', 'GB'],
     'relation_to_junction': ['UNKNOWN'],
+    'snow': ['YES', 'NO', 'UNKNOWN'],
+    'rain': ['YES', 'NO', 'UNKNOWN'],
+    'wind': ['YES', 'NO', 'UNKNOWN'],
+    'fog': ['YES', 'NO', 'UNKNOWN'],
     'road_class': ['UNKNOWN'],
     'surface_cond': ['UNKNOWN'],
     'lighting': ['UNKNOWN'],
@@ -30,10 +34,10 @@ def new(id,
         fatalities_count,
         vehicles_count,
         speed_limit,
-        snow=False,
-        rain=False,
-        wind=False,
-        fog=False,
+        snow='UNKNOWN',
+        rain='UNKNOWN',
+        wind='UNKNOWN',
+        fog='UNKNOWN',
         relation_to_junction='UNKNOWN',
         road_class='UNKNOWN',
         surface_cond='UNKNOWN',
@@ -63,12 +67,7 @@ def new(id,
         'other_conditions': other_conditions
     }
 
-    for key in accident.keys():
-        if key in constraints:
-            if not accident[key] in constraints[key]:
-                err_msg = 'Value {0} is not permitted for the attribute {1}'.format(accident[key], key)
-                raise ValueError(err_msg)
-
+    common.check_key_constraints(accident, constraints)
     return accident
 
 
