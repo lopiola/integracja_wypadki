@@ -5,6 +5,9 @@
 Common functions for parsers.
 """
 
+"""
+Translating dictionary for country codes
+"""
 country_code = {
     'usa': 1,
     'gb': 2
@@ -12,10 +15,16 @@ country_code = {
 
 
 def get_usa_acc_id (year, case_index):
+    """
+    Get id for usa cases.
+    """
     return get_acc_id(year, case_index, 'usa')
 
 
 def get_gb_acc_id(year, case_index):
+    """
+    Get id for Great Britain cases
+    """
     return get_acc_id(year, case_index, 'gb')
 
 
@@ -34,10 +43,9 @@ def get_acc_id(year, case_index, country):
     1234 means the case ID as in original data
     """
     try:
-        acc_id = country_code[country] * 1e15
-        acc_id += year * 1e11
+        acc_id = country_code[country] * 1000000000000000
+        acc_id += year * 100000000000
         acc_id += case_index
     except KeyError:
         raise ValueError("Country code incorrect")
     return acc_id
-
