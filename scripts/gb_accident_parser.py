@@ -7,8 +7,8 @@ Parsing accident CSV files for Great Britain data and putting them into DB
 
 import csv
 import sys
-import parsing.common
-
+import db_api.accident
+from parsing.common import get_timestamp, get_gb_acc_id
 
 # To help remember the names
 field_names = [
@@ -63,7 +63,45 @@ def get_id(year, acc_index):
     Mapping function for id.
     """
     case_index = int(acc_index[-5:])
-    return parsing.common.get_gb_acc_id(year, case_index)
+    return get_gb_acc_id(year, case_index)
+
+
+def get_datetime(date, time):
+    """
+    Builds datetime in a form of dictionary based on date and time
+    of accident.
+    :param date - Date in format "DD/MM/YYYY"
+    :param time - Time in format "HH:mm"
+    """
+    datetime = {}
+
+    # Date format is "DD/MM/YYYY"
+    day = int(date[:2])
+    month = int(date[3:5])
+    year = int(date[-4:])
+    datetime['year'] = year
+    datetime['month'] = month
+    datetime['day'] = day
+
+    # Time format is "HH:mm"
+    hour = int(time[:2])
+    minute = int(time[-2:])
+    datetime['hour'] = hour
+    datetime['minute'] = minute
+
+    return datetime
+
+
+def get_year(acc_index):
+    return int(acc_index[0:4])
+
+
+KILOMETERS_IN_MILE = 1.60934
+
+
+def convert_to_kmph(mph):
+    # TODO: Should it be int?
+    return int(mph * KILOMETERS_IN_MILE + 0.5)
 
 
 """
@@ -75,7 +113,12 @@ that are passed in as kwargs.
 translator_map = {
     '\xef\xbb\xbfAccident_Index': ('id', get_id),
     'Longitude': ('longitude', lambda value: float(value)),
-    'Latitude': ('latitude', lambda value: float(value))
+    'Latitude': ('latitude', lambda value: float(value)),
+    'Date': ('timestamp', get_timestamp),
+    'Day_of_Week': ('day_of_week', lambda value: int(value)),
+    'Number_of_Casualties': ('persons_count', lambda value: int(value)),
+    'Number_of_Vehicles': ('vehicles_count', lambda value: int(value)),
+    'Speed_limit': ('speed_limit', lambda value: convert_to_kmph(int(value)))
 }
 
 
@@ -98,35 +141,43 @@ def get_kwargs(accident_data, field):
     Default is one pair value = field_value_as_string
     """
     if field == '\xef\xbb\xbfAccident_Index':
-        return {'year': 2000, 'acc_index': accident_data['\xef\xbb\xbfAccident_Index']}
+        acc_index = accident_data['\xef\xbb\xbfAccident_Index']
+        return {'year': get_year(acc_index), 'acc_index': acc_index}
+    if field == 'Date':
+        return get_datetime(accident_data['Date'], accident_data['Time'])
     return {'value': accident_data[field]}
 
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print('Usage: {0} <csv_file>'.format(sys.argv[0]))
+        exit(1)
 
-if len(sys.argv) != 2:
-    print('Usage: {0} <csv_file>'.format(sys.argv[0]))
-    exit(1)
+    with open(sys.argv[1], 'rt') as csv_file:
+        reader = csv.DictReader(csv_file)
 
-with open(sys.argv[1], 'rt') as csv_file:
-    reader = csv.DictReader(csv_file)
+        fatal = 0
+        non_fatal = 0
 
-    fatal = 0
-    non_fatal = 0
+        fields = reader.fieldnames
+        accidents = []
 
-    fields = reader.fieldnames
-
-    for accident_data in reader:
-        if is_fatal(accident_data):
-            accident = {}
-            for field in fields:
-                kwargs = get_kwargs(accident_data, field)
-                try:
-                    (label, value) = translate_field(field, **kwargs)
-                    accident[label] = value
-                except ValueError:
-                    pass
-                    # print('Ignoring field with label {0}'.format(field))
-            # print accident
-            fatal += 1
-        else:
-            non_fatal += 1
-    print(fatal, non_fatal)
+        for accident_data in reader:
+            if is_fatal(accident_data):
+                accident = {'country': 'GB'}
+                for field in fields:
+                    kwargs = get_kwargs(accident_data, field)
+                    try:
+                        (label, value) = translate_field(field, **kwargs)
+                        accident[label] = value
+                    except ValueError:
+                        pass
+                # TODO: Get fatalities count. Requires scanning casualties file"
+                # (maybe set this to 0 and update when inserting casualties))
+                accident['fatalities_count'] = -1
+                accidents.append(db_api.accident.new(**accident))
+                print(accident)
+                fatal += 1
+            else:
+                non_fatal += 1
+        db_api.accident.insert(accidents)
+        print(fatal, non_fatal)

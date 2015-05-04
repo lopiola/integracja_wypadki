@@ -9,8 +9,8 @@ Common functions for parsers.
 Translating dictionary for country codes
 """
 country_code = {
-    'usa': 1,
-    'gb': 2
+    'USA': 1,
+    'GB': 2
 }
 
 
@@ -18,14 +18,14 @@ def get_usa_acc_id(year, case_index):
     """
     Get id for usa cases.
     """
-    return get_acc_id(year, case_index, 'usa')
+    return get_acc_id(year, case_index, 'USA')
 
 
 def get_gb_acc_id(year, case_index):
     """
     Get id for Great Britain cases
     """
-    return get_acc_id(year, case_index, 'gb')
+    return get_acc_id(year, case_index, 'GB')
 
 
 def get_acc_id(year, case_index, country):
@@ -49,3 +49,10 @@ def get_acc_id(year, case_index, country):
     except KeyError:
         raise ValueError("Country code incorrect")
     return acc_id
+
+
+def get_timestamp(year, month, day, hour, minute):
+    hour %= 24
+    minute %= 60
+    timestamp = 'TIMESTAMP \'{0}-{1}-{2} {3}:{4}:00\''.format(year, month, day, hour, minute)
+    return timestamp
