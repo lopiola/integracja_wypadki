@@ -63,7 +63,7 @@ try:
         month = get_int(row, month_index)
         day = get_int(row, day_index)
         hour = get_int(row, hour_index)
-        if hour > s23:
+        if hour > 23:
             dupa += 1
         hour %= 24
         minute = get_int(row, minute_index)

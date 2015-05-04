@@ -8,7 +8,6 @@ Parsing accident CSV files for Great Britain data and putting them into DB
 import csv
 import sys
 import parsing.common
-from db_api import accident
 
 
 # To help remember the names

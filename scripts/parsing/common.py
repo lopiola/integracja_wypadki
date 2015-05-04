@@ -14,7 +14,7 @@ country_code = {
 }
 
 
-def get_usa_acc_id (year, case_index):
+def get_usa_acc_id(year, case_index):
     """
     Get id for usa cases.
     """
