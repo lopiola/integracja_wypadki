@@ -51,6 +51,20 @@ def get_acc_id(year, case_index, country):
     return acc_id
 
 
+def get_veh_id(acc_id, vehicle_index):
+    """
+    Get global vehicle id according to country, year and index of accident.
+
+    The id is constructed as <Acc_id><Vehicle_index>
+    where Vehicle_index is two digits max.
+    """
+
+    veh_id = acc_id * 100
+    veh_id += vehicle_index
+
+    return veh_id
+
+
 def get_timestamp(year, month, day, hour, minute):
     hour %= 24
     minute %= 60

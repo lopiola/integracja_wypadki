@@ -58,15 +58,20 @@ def get_int(list_row, index):
     return int(float(list_row[index]))
 
 
-def get_id(year, acc_index):
+def index_letters_to_integer(index_letters):
+    return ord(index_letters[0]) * 1000 + ord(index_letters[1])
+
+
+def get_acc_id(year, acc_index):
     """
     Mapping function for id.
     """
-    case_index = int(acc_index[-5:])
+    case_index = index_letters_to_integer(acc_index[-7:-5]) * 100000
+    case_index += int(acc_index[-5:])
     return get_gb_acc_id(year, case_index)
 
 
-def get_datetime(date, time):
+def get_acc_datetime(date, time):
     """
     Builds datetime in a form of dictionary based on date and time
     of accident.
@@ -92,7 +97,7 @@ def get_datetime(date, time):
     return datetime
 
 
-def get_year(acc_index):
+def get_acc_year(acc_index):
     return int(acc_index[0:4])
 
 
@@ -106,12 +111,12 @@ def convert_to_kmph(mph):
 
 """
 A mapping from labels in csv file to a tuple of new label for
-datatabase and function for transforming old value into new one.
+database and function for transforming old value into new one.
 Transforming functions can have arbitrarily many arguments
 that are passed in as kwargs.
 """
 translator_map = {
-    '\xef\xbb\xbfAccident_Index': ('id', get_id),
+    '\xef\xbb\xbfAccident_Index': ('id', get_acc_id),
     'Longitude': ('longitude', lambda value: float(value)),
     'Latitude': ('latitude', lambda value: float(value)),
     'Date': ('timestamp', get_timestamp),
@@ -142,9 +147,9 @@ def get_kwargs(accident_data, field):
     """
     if field == '\xef\xbb\xbfAccident_Index':
         acc_index = accident_data['\xef\xbb\xbfAccident_Index']
-        return {'year': get_year(acc_index), 'acc_index': acc_index}
+        return {'year': get_acc_year(acc_index), 'acc_index': acc_index}
     if field == 'Date':
-        return get_datetime(accident_data['Date'], accident_data['Time'])
+        return get_acc_datetime(accident_data['Date'], accident_data['Time'])
     return {'value': accident_data[field]}
 
 if __name__ == '__main__':

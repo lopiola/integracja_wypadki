@@ -103,6 +103,24 @@ def delete(id_list):
     con.close()
 
 
+def select(id_list):
+    if not isinstance(id_list, list):
+        id_list = [id_list]
+    user = common.get_user()
+    database = common.get_db_name()
+    con = connect(user=user, database=database)
+    cur = con.cursor()
+
+    for acc_id in id_list:
+        cur.execute(select_command(acc_id))
+        result = cur.fetchone()
+
+    cur.close()
+    con.commit()
+    con.close()
+
+    return result
+
 def create_table_command():
     return '''
 CREATE TABLE accident(
@@ -182,4 +200,9 @@ INSERT INTO accident VALUES (
 
 def delete_command(acc_id):
     command = '''DELETE FROM accident WHERE id = {id}'''
+    return command.format(id=acc_id)
+
+
+def select_command(acc_id):
+    command = '''SELECT * FROM accident WHERE id = {id}'''
     return command.format(id=acc_id)
