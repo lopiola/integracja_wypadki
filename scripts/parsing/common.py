@@ -16,21 +16,21 @@ country_code = {
 
 def get_usa_acc_id(year, case_index):
     """
-    Get id for usa cases.
+    Returns id for usa cases.
     """
     return get_acc_id(year, case_index, 'USA')
 
 
 def get_gb_acc_id(year, case_index):
     """
-    Get id for Great Britain cases
+    Returns id for Great Britain cases
     """
     return get_acc_id(year, case_index, 'GB')
 
 
 def get_acc_id(year, case_index, country):
     """
-    Get global accident id according to country, year and index of accident.
+    Returns global accident id according to country, year and index of accident.
 
     USA ids will be in form 1200700000001234
     1 at the beginning means it is from USA
@@ -53,7 +53,7 @@ def get_acc_id(year, case_index, country):
 
 def get_veh_id(acc_id, vehicle_index):
     """
-    Get global vehicle id according to country, year and index of accident.
+    Returns global vehicle id according to country, year and index of accident.
 
     The id is constructed as <Acc_id><Vehicle_index>
     where Vehicle_index is two digits max.
@@ -66,7 +66,31 @@ def get_veh_id(acc_id, vehicle_index):
 
 
 def get_timestamp(year, month, day, hour, minute):
+    """
+    Formats timestamp from time data.
+    """
     hour %= 24
     minute %= 60
     timestamp = 'TIMESTAMP \'{0}-{1}-{2} {3}:{4}:00\''.format(year, month, day, hour, minute)
     return timestamp
+
+
+def translate_field(label, translator_map, **kwargs):
+    """
+    Translate field with an old label into tuple (new_label, new_value).
+    :param translator_map - maps labels to appropriate tuples. Supplied by parsing script.
+    :param kwargs - keyword style arguments passed into mapping function to
+        calculate the new value. May be arbitrarily big.
+    """
+    try:
+        (new_label, map_function) = translator_map[label]
+        return new_label, map_function(**kwargs)
+    except KeyError:
+        raise ValueError("Unknown label")
+
+
+"""
+Lambdas for mapping values to simple types.
+"""
+to_float = lambda value: float(value)
+to_int = lambda value: int(value)

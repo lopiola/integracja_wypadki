@@ -9,10 +9,10 @@ import sys
 import csv
 import db_api.vehicle
 import db_api.accident
-from gb_accident_parser import get_acc_id, get_acc_year
 from parsing import common
+from parsing.common import translate_field
+from parsing.gb_common import get_acc_id, get_acc_id_from_data, check_acc_id_for_data
 
-# To help remember the names
 field_names = [
     '\xef\xbb\xbfAcc_Index',
     'Vehicle_Reference',
@@ -44,8 +44,7 @@ def get_kwargs(vehicle_data, field):
     Default is one pair value = field_value_as_string
     """
     if field == '\xef\xbb\xbfAcc_Index':
-        acc_index = vehicle_data[field]
-        return {'year': get_acc_year(acc_index), 'acc_index': acc_index}
+        return {'acc_index': vehicle_data[field]}
     if field == 'Vehicle_Reference':
         return {'vehicle_data': vehicle_data, 'veh_ref': vehicle_data[field]}
     return {'value': vehicle_data[field]}
@@ -55,10 +54,8 @@ def get_veh_id(vehicle_data, veh_ref):
     """
     Mapping function for vehicle id
     """
-    veh_id = common.get_veh_id(
-        get_acc_id_from_vehicle_data(vehicle_data),
-        int(veh_ref)
-    )
+    acc_id = get_acc_id_from_data(vehicle_data)
+    veh_id = common.get_veh_id(acc_id, int(veh_ref))
     return veh_id
 
 
@@ -70,41 +67,10 @@ that are passed in as kwargs.
 """
 translator_map = {
     '\xef\xbb\xbfAcc_Index': ('acc_id', get_acc_id),
-    'Vehicle_Reference' : ('id', get_veh_id),
+    'Vehicle_Reference': ('id', get_veh_id),
     'Age_Band_of_Driver': ('driver_age', lambda value: 0),
     'Sex_of_Driver': ('driver_sex', lambda value: 'UNKNOWN')
 }
-
-
-def translate_field(label, **kwargs):
-    """
-    Translate field with an old label into tuple (new_label, new_value).
-    :param kwargs - keyword style arguments passed into mapping function to
-        calculate the new value. May be arbitrarily big.
-    """
-    try:
-        (new_label, map_function) = translator_map[label]
-        return new_label, map_function(**kwargs)
-    except KeyError:
-        raise ValueError("Unknown label")
-
-
-def get_acc_id_from_vehicle_data(vehicle_data):
-    """
-    Based on vehicle data constructs accident id.
-    """
-    label = '\xef\xbb\xbfAcc_Index'
-    _, acc_id = translate_field(label, **get_kwargs(vehicle_data, label))
-    return acc_id
-
-
-def check_acc_id(vehicle_data):
-    """
-    Checks if accident id for this vehicle is in database.
-    Ensures that we insert data about vehicles that took part in fatal crashes only.
-    """
-    acc_id = get_acc_id_from_vehicle_data(vehicle_data)
-    return db_api.accident.select(acc_id) is not None
 
 
 if __name__ == '__main__':
@@ -123,19 +89,18 @@ if __name__ == '__main__':
 
         for vehicle_data in reader:
             vehicle = {}
-            if check_acc_id(vehicle_data):
+            if check_acc_id_for_data(vehicle_data):
                 for field in fields:
-                    if field == 'Vehicle_Reference':
-                        print vehicle_data[field]
                     kwargs = get_kwargs(vehicle_data, field)
                     try:
-                        (label, value) = translate_field(field, **kwargs)
+                        (label, value) = translate_field(field, translator_map, **kwargs)
                         vehicle[label] = value
                     except ValueError:
+                        # We do not want to map this field
                         pass
                 # TODO: count this based on casualties file
                 vehicle['passenger_count'] = 0
                 vehicles.append(db_api.vehicle.new(**vehicle))
                 print(vehicle)
 
-        # db_api.vehicle.insert(vehicles)
+        db_api.vehicle.insert(vehicles)
