@@ -65,6 +65,20 @@ def get_veh_id(acc_id, vehicle_index):
     return veh_id
 
 
+def get_person_id(acc_id, person_index):
+    """
+    Returns global person id according to country, year and index of accident.
+
+    The id is constructed as <Acc_id><Person_index>
+    where Vehicle_index is two digits max.
+    """
+
+    person_id = acc_id * 100
+    person_id += person_index
+
+    return person_id
+
+
 def get_timestamp(year, month, day, hour, minute):
     """
     Formats timestamp from time data.

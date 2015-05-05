@@ -9,9 +9,8 @@ import sys
 import csv
 import db_api.vehicle
 import db_api.accident
-from parsing import common
 from parsing.common import translate_field
-from parsing.gb_common import get_acc_id, get_acc_id_from_data, check_acc_id_for_data
+from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id
 
 field_names = [
     '\xef\xbb\xbfAcc_Index',
@@ -46,17 +45,9 @@ def get_kwargs(vehicle_data, field):
     if field == '\xef\xbb\xbfAcc_Index':
         return {'acc_index': vehicle_data[field]}
     if field == 'Vehicle_Reference':
-        return {'vehicle_data': vehicle_data, 'veh_ref': vehicle_data[field]}
+        return {'gb_data': vehicle_data}
     return {'value': vehicle_data[field]}
 
-
-def get_veh_id(vehicle_data, veh_ref):
-    """
-    Mapping function for vehicle id
-    """
-    acc_id = get_acc_id_from_data(vehicle_data)
-    veh_id = common.get_veh_id(acc_id, int(veh_ref))
-    return veh_id
 
 
 """
@@ -72,7 +63,6 @@ translator_map = {
     'Sex_of_Driver': ('driver_sex', lambda value: 'UNKNOWN')
 }
 
-
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('Usage: {0} <csv_file>'.format(sys.argv[0]))
@@ -81,15 +71,12 @@ if __name__ == '__main__':
     with open(sys.argv[1], 'rt') as csv_file:
         reader = csv.DictReader(csv_file)
 
-        fatal = 0
-        non_fatal = 0
-
         fields = reader.fieldnames
         vehicles = []
 
         for vehicle_data in reader:
             vehicle = {}
-            if check_acc_id_for_data(vehicle_data):
+            if not check_acc_id_for_data(vehicle_data):
                 for field in fields:
                     kwargs = get_kwargs(vehicle_data, field)
                     try:
@@ -100,7 +87,7 @@ if __name__ == '__main__':
                         pass
                 # TODO: count this based on casualties file
                 vehicle['passenger_count'] = 0
-                vehicles.append(db_api.vehicle.new(**vehicle))
                 print(vehicle)
+                vehicles.append(db_api.vehicle.new(**vehicle))
 
         db_api.vehicle.insert(vehicles)

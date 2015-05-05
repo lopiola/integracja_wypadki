@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import db_api
+import db_api.accident
+import common
 
 """
 Common functions for parsers of data from Great Britain.
@@ -57,3 +58,13 @@ def check_acc_id_for_data(gb_data):
     """
     acc_id = get_acc_id_from_data(gb_data)
     return db_api.accident.select(acc_id) is not None
+
+
+def get_veh_id(gb_data):
+    """
+    Mapping function for vehicle id
+    """
+    veh_ref = gb_data['Vehicle_Reference']
+    acc_id = get_acc_id_from_data(gb_data)
+    veh_id = common.get_veh_id(acc_id, int(veh_ref))
+    return veh_id
