@@ -9,7 +9,7 @@ import sys
 import csv
 import db_api.vehicle
 import db_api.accident
-from parsing.common import translate_field
+from parsing.common import translate_field, map_from_dictionary
 from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id
 
 field_names = [
@@ -48,6 +48,14 @@ def get_kwargs(vehicle_data, field):
         return {'gb_data': vehicle_data}
     return {'value': vehicle_data[field]}
 
+"""
+Mapping dictionaries.
+"""
+driver_sex_dictionary = {
+    '1':    'MALE',
+    '2':    'FEMALE',
+    '-1':   'UNKNOWN'
+}
 
 
 """
@@ -60,7 +68,7 @@ translator_map = {
     '\xef\xbb\xbfAcc_Index': ('acc_id', get_acc_id),
     'Vehicle_Reference': ('id', get_veh_id),
     'Age_Band_of_Driver': ('driver_age', lambda value: 0),
-    'Sex_of_Driver': ('driver_sex', lambda value: 'UNKNOWN')
+    'Sex_of_Driver': ('driver_sex', map_from_dictionary(driver_sex_dictionary))
 }
 
 if __name__ == '__main__':

@@ -108,3 +108,11 @@ Lambdas for mapping values to simple types.
 """
 to_float = lambda value: float(value)
 to_int = lambda value: int(value)
+
+
+def map_from_dictionary(dictionary):
+    """
+    Returns a function for translating values into new ones based on
+    he given mapping dictionary.
+    """
+    return lambda value: dictionary[value]

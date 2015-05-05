@@ -9,7 +9,7 @@ import sys
 import csv
 import db_api.person
 from parsing import common
-from parsing.common import translate_field
+from parsing.common import translate_field, map_from_dictionary
 from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, get_acc_id_from_data
 
 
@@ -39,6 +39,23 @@ def get_person_id(person_data):
     person_id = common.get_person_id(acc_id, int(person_ref))
     return person_id
 
+
+"""
+Mapping dictionaries.
+"""
+casualty_sex_dictionary = {
+    '1':    'MALE',
+    '2':    'FEMALE',
+    '-1':   'UNKNOWN'
+}
+
+casualty_severity_dictionary = {
+    '1':    'FATAL',
+    '2':    'SERIOUS',
+    '3':    'SLIGHT'
+}
+
+
 """
 A mapping from labels in csv file to a tuple of new label for
 database and function for transforming old value into new one.
@@ -49,9 +66,9 @@ translator_map = {
     '\xef\xbb\xbfAcc_Index': ('acc_id', get_acc_id),
     'Vehicle_Reference': ('veh_id', get_veh_id),
     'Casualty_Reference': ('id', get_person_id),
-    'Sex_of_Casualty': ('sex', lambda value: 'UNKNOWN'),
+    'Sex_of_Casualty': ('sex', map_from_dictionary(casualty_sex_dictionary)),
     'Age_Band_of_Casualty': ('age', lambda value: 0),
-    'Casualty_Severity': ('injury_level', lambda value: 'UNKNOWN')
+    'Casualty_Severity': ('injury_level', map_from_dictionary(casualty_severity_dictionary))
 }
 
 
@@ -68,17 +85,6 @@ def get_kwargs(person_data, field):
         return {'person_data': person_data}
     return {'value': person_data[field]}
 
-# id,
-# acc_id,
-# veh_id,
-# sex,
-# age,
-# injury_level,
-# type='UNKNOWN',
-# seatbelt='UNKNOWN',
-# seated_pos='UNKNOWN'):
-
-
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -90,8 +96,6 @@ if __name__ == '__main__':
 
         fields = reader.fieldnames
         persons = []
-
-        print(fields)
 
         for person_data in reader:
             person = {}

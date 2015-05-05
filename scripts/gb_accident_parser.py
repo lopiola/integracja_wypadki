@@ -99,6 +99,7 @@ translator_map = {
     'Longitude': ('longitude', to_float),
     'Latitude': ('latitude', to_float),
     'Date': ('timestamp', get_timestamp),
+    # TODO: check day of week codes
     'Day_of_Week': ('day_of_week', to_float),
     'Number_of_Casualties': ('persons_count', to_int),
     'Number_of_Vehicles': ('vehicles_count', to_int),
