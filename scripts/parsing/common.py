@@ -91,16 +91,21 @@ def get_timestamp(year, month, day, hour, minute):
 
 def translate_field(label, translator_map, **kwargs):
     """
-    Translate field with an old label into tuple (new_label, new_value).
-    :param translator_map - maps labels to appropriate tuples. Supplied by parsing script.
-    :param kwargs - keyword style arguments passed into mapping function to
-        calculate the new value. May be arbitrarily big.
+    Translate field with an old label into a list of tuples of form (new_label, new_value).
+    :param translator_map - maps labels to appropriate tuple lists. Supplied by parsing script.
+    For each label we get a list of tuples (new_label, mapping_function). Mapping_function invoked
+    in the arguments yields the new value.
+    :param kwargs - keyword style arguments passed into mapping functions for
+    calculating the new values. May be arbitrarily long.
     """
     try:
-        (new_label, map_function) = translator_map[label]
-        return new_label, map_function(**kwargs)
+        new_label_list = []
+        label_list = translator_map[label]
+        for (new_label, map_function) in label_list:
+            new_label_list.append((new_label, map_function(**kwargs)))
     except KeyError:
         raise ValueError("Unknown label")
+    return new_label_list
 
 
 """

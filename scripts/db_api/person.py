@@ -14,7 +14,7 @@ constraints = {
     'injury_level': ['FATAL', 'SERIOUS', 'SLIGHT', 'NONE', 'UNKNOWN'],
     'type': ['DRIVER', 'PASSENGER', 'PEDESTRIAN', 'UNKNOWN'],
     'seatbelt': ['NOT_APPLICABLE', 'WORN_CONFIRMED', 'WORN_NOT_CONFIRMED', 'NOT_WORN', 'UNKNOWN'],
-    'seated_pos': ['DRIVER', 'PASSENGER', 'BACK', 'UNKNOWN']
+    'seated_pos': ['DRIVER', 'PASSENGER', 'BACK', 'NONE', 'UNKNOWN']
 }
 
 
@@ -38,6 +38,21 @@ def new(id,
         'seatbelt': seatbelt,
         'seated_pos': seated_pos,
     }
+
+    common.check_key_constraints(person, constraints)
+    return person
+
+
+def new_from_dict(person_data):
+    person = {
+        'type': 'UNKNOWN',
+        'seatbelt': 'UNKNOWN',
+        'seated_pos': 'UNKNOWN',
+    }
+
+    person.update(person_data)
+
+    # TODO: Check obligatory fields
 
     common.check_key_constraints(person, constraints)
     return person

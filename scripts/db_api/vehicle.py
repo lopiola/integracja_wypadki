@@ -66,6 +66,29 @@ def new(id,
     return vehicle
 
 
+def new_from_dict(vehicle_data):
+    vehicle = {
+        'type': 'UNKNOWN',
+        'make': 'UNKNOWN',
+        'model': 'UNKNOWN',
+        'fuel_type': 'UNKNOWN',
+        'hit_and_run': 'UNKNOWN',
+        'skidded': 'UNKNOWN',
+        'rollover': 'UNKNOWN',
+        'jackknifing': 'UNKNOWN',
+        'first_impact_area': 'UNKNOWN',
+        'maneuver': 'UNKNOWN',
+        'prior_location': 'UNKNOWN',
+        'driver_drinking': 'UNKNOWN'
+    }
+    vehicle.update(vehicle_data)
+
+    # TODO: Check that compulsory fields exist
+
+    common.check_key_constraints(vehicle, constraints)
+    return vehicle
+
+
 def insert(vehicle_list):
     if not isinstance(vehicle_list, list):
         vehicle_list = [vehicle_list]
@@ -75,6 +98,7 @@ def insert(vehicle_list):
     cur = con.cursor()
 
     for vehicle in vehicle_list:
+        print(vehicle)
         cur.execute(insert_command(vehicle))
 
     cur.close()

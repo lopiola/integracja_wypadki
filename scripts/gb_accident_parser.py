@@ -8,29 +8,29 @@ Parsing accident CSV files for Great Britain data and putting them into DB
 import csv
 import sys
 import db_api.accident
-from parsing.common import get_timestamp, translate_field, to_float, to_int
+from parsing.common import get_timestamp, translate_field, to_float, to_int, map_from_dictionary
 from parsing.gb_common import get_acc_id
 
 # To help remember the names
 field_names = [
-    '\xef\xbb\xbfAccident_Index',
+    '\xef\xbb\xbfAccident_Index',       #done
     'Location_Easting_OSGR',
     'Location_Northing_OSGR',
-    'Longitude',
-    'Latitude',
+    'Longitude',                        #done
+    'Latitude',                         #done
     'Police_Force',
-    'Accident_Severity',
-    'Number_of_Vehicles',
-    'Number_of_Casualties',
-    'Date',
+    'Accident_Severity',                #done
+    'Number_of_Vehicles',               #done
+    'Number_of_Casualties',             #done
+    'Date',                             #done
     'Day_of_Week',
-    'Time',
+    'Time',                             #done
     'Local_Authority_(District)',
     'Local_Authority_(Highway)',
     '1st_Road_Class',
     '1st_Road_Number',
     'Road_Type',
-    'Speed_limit',
+    'Speed_limit',                      #done
     'Junction_Detail',
     'Junction_Control',
     '2nd_Road_Class',
@@ -38,7 +38,7 @@ field_names = [
     'Pedestrian_Crossing-Human_Control',
     'Pedestrian_Crossing-Physical_Facilities',
     'Light_Conditions',
-    'Weather_Conditions',
+    'Weather_Conditions',               #done
     'Road_Surface_Conditions',
     'Special_Conditions_at_Site',
     'Carriageway_Hazards',
@@ -89,21 +89,79 @@ def mph_to_kmph(mph):
 
 
 """
+Mapping dictionaries.
+"""
+snow_dictionary = {
+    '1':    'NO',
+    '2':    'NO',
+    '3':    'YES',
+    '4':    'NO',
+    '5':    'NO',
+    '6':    'YES',
+    '7':    'NO',
+    '8':    'NO',
+    '-1':   'UNKNOWN',
+}
+
+rain_dictionary = {
+    '1':    'NO',
+    '2':    'YES',
+    '3':    'NO',
+    '4':    'NO',
+    '5':    'YES',
+    '6':    'NO',
+    '7':    'NO',
+    '8':    'NO',
+    '-1':   'UNKNOWN',
+}
+
+wind_dictionary = {
+    '1':    'NO',
+    '2':    'NO',
+    '3':    'NO',
+    '4':    'YES',
+    '5':    'YES',
+    '6':    'YES',
+    '7':    'NO',
+    '8':    'NO',
+    '-1':   'UNKNOWN',
+}
+
+fog_dictionary = {
+    '1':    'NO',
+    '2':    'NO',
+    '3':    'NO',
+    '4':    'NO',
+    '5':    'NO',
+    '6':    'NO',
+    '7':    'YES',
+    '8':    'NO',
+    '-1':   'UNKNOWN',
+}
+
+
+"""
 A mapping from labels in csv file to a tuple of new label for
 database and function for transforming old value into new one.
 Transforming functions can have arbitrarily many arguments
 that are passed in as kwargs.
 """
 translator_map = {
-    '\xef\xbb\xbfAccident_Index': ('id', get_acc_id),
-    'Longitude': ('longitude', to_float),
-    'Latitude': ('latitude', to_float),
-    'Date': ('timestamp', get_timestamp),
+    '\xef\xbb\xbfAccident_Index': [('id', get_acc_id)],
+    'Longitude': [('longitude', to_float)],
+    'Latitude': [('latitude', to_float)],
+    'Date': [('timestamp', get_timestamp)],
     # TODO: check day of week codes
-    'Day_of_Week': ('day_of_week', to_float),
-    'Number_of_Casualties': ('persons_count', to_int),
-    'Number_of_Vehicles': ('vehicles_count', to_int),
-    'Speed_limit': ('speed_limit', lambda value: mph_to_kmph(int(value)))
+    'Day_of_Week': [('day_of_week', to_float)],
+    'Number_of_Casualties': [('persons_count', to_int)],
+    'Number_of_Vehicles': [('vehicles_count', to_int)],
+    'Speed_limit': [('speed_limit', lambda value: mph_to_kmph(int(value)))],
+    'Weather_Conditions': [
+        ('snow', map_from_dictionary(snow_dictionary)),
+        ('rain', map_from_dictionary(rain_dictionary)),
+        ('fog', map_from_dictionary(fog_dictionary)),
+        ('wind', map_from_dictionary(wind_dictionary))
+    ]
 }
 
 
@@ -135,15 +193,16 @@ if __name__ == '__main__':
                 for field in fields:
                     kwargs = get_kwargs(accident_data, field)
                     try:
-                        (label, value) = translate_field(field, translator_map, **kwargs)
-                        accident[label] = value
+                        label_list = translate_field(field, translator_map, **kwargs)
+                        for (label, value) in label_list:
+                            accident[label] = value
                     except ValueError:
                         # We do not want to map this field
                         pass
-                # TODO: Get fatalities count. Requires scanning casualties file"
+                # TODO: Get fatalities count. Requires scanning casualties file
                 # (maybe set this to 0 and update when inserting casualties))
                 accident['fatalities_count'] = -1
-                accidents.append(db_api.accident.new(**accident))
+                accidents.append(db_api.accident.new_from_dict(accident))
                 print(accident)
 
         db_api.accident.insert(accidents)

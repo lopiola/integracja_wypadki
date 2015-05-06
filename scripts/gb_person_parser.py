@@ -16,13 +16,13 @@ from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, get
 # To remember the names
 
 fields = [
-    '\xef\xbb\xbfAcc_Index',
-    'Vehicle_Reference',
-    'Casualty_Reference',
+    '\xef\xbb\xbfAcc_Index',    #done
+    'Vehicle_Reference',        #done
+    'Casualty_Reference',       #done
     'Casualty_Class',
-    'Sex_of_Casualty',
+    'Sex_of_Casualty',          #done
     'Age_Band_of_Casualty',
-    'Casualty_Severity',
+    'Casualty_Severity',        #done
     'Pedestrian_Location',
     'Pedestrian_Movement',
     'Car_Passenger',
@@ -46,13 +46,21 @@ Mapping dictionaries.
 casualty_sex_dictionary = {
     '1':    'MALE',
     '2':    'FEMALE',
-    '-1':   'UNKNOWN'
+    '-1':   'UNKNOWN',
 }
 
 casualty_severity_dictionary = {
     '1':    'FATAL',
     '2':    'SERIOUS',
-    '3':    'SLIGHT'
+    '3':    'SLIGHT',
+}
+
+car_passenger_dictionary = {
+    '0':    'NONE',
+    # TODO: differentiate between driver and passenger
+    '1':    'PASSENGER',
+    '2':    'BACK',
+    '-1':   'UNKNOWN',
 }
 
 
@@ -63,12 +71,13 @@ Transforming functions can have arbitrarily many arguments
 that are passed in as kwargs.
 """
 translator_map = {
-    '\xef\xbb\xbfAcc_Index': ('acc_id', get_acc_id),
-    'Vehicle_Reference': ('veh_id', get_veh_id),
-    'Casualty_Reference': ('id', get_person_id),
-    'Sex_of_Casualty': ('sex', map_from_dictionary(casualty_sex_dictionary)),
-    'Age_Band_of_Casualty': ('age', lambda value: 0),
-    'Casualty_Severity': ('injury_level', map_from_dictionary(casualty_severity_dictionary))
+    '\xef\xbb\xbfAcc_Index': [('acc_id', get_acc_id)],
+    'Vehicle_Reference': [('veh_id', get_veh_id)],
+    'Casualty_Reference': [('id', get_person_id)],
+    'Sex_of_Casualty': [('sex', map_from_dictionary(casualty_sex_dictionary))],
+    'Age_Band_of_Casualty': [('age', lambda value: 0)],
+    'Casualty_Severity': [('injury_level', map_from_dictionary(casualty_severity_dictionary))],
+    'Car_Passenger': [('seated_pos', map_from_dictionary(car_passenger_dictionary))],
 }
 
 
@@ -99,16 +108,17 @@ if __name__ == '__main__':
 
         for person_data in reader:
             person = {}
-            if not check_acc_id_for_data(person_data):
+            if check_acc_id_for_data(person_data):
                 for field in fields:
                     kwargs = get_kwargs(person_data, field)
                     try:
-                        (label, value) = translate_field(field, translator_map, **kwargs)
-                        person[label] = value
+                        label_list = translate_field(field, translator_map, **kwargs)
+                        for (label, value) in label_list:
+                            person[label] = value
                     except ValueError:
                         # We do not want to map this field
                         pass
-                persons.append(db_api.person.new(**person))
+                persons.append(db_api.person.new_from_dict(person))
                 print(person)
 
         db_api.person.insert(persons)

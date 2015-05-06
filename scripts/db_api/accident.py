@@ -71,6 +71,28 @@ def new(id,
     return accident
 
 
+def new_from_dict(accident_data):
+    accident = {
+        'snow': 'UNKNOWN',
+        'rain': 'UNKNOWN',
+        'wind': 'UNKNOWN',
+        'fog': 'UNKNOWN',
+        'relation_to_junction': 'UNKNOWN',
+        'road_class': 'UNKNOWN',
+        'surface_cond': 'UNKNOWN',
+        'lighting': 'UNKNOWN',
+        'traffic_control': 'UNKNOWN',
+        'other_conditions': 'UNKNOWN'
+    }
+
+    accident.update(accident_data)
+
+    # TODO: Check obligatory fields
+
+    common.check_key_constraints(accident, constraints)
+    return accident
+
+
 def insert(accident_list):
     if not isinstance(accident_list, list):
         accident_list = [accident_list]
