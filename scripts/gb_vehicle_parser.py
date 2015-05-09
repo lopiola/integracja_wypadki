@@ -10,7 +10,7 @@ import csv
 import db_api.vehicle
 import db_api.accident
 from parsing.common import translate_field, map_from_dictionary
-from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id
+from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, random_from_age_band
 
 field_names = [
     '\xef\xbb\xbfAcc_Index',            #done
@@ -28,7 +28,7 @@ field_names = [
     'Was_Vehicle_Left_Hand_Drive?',
     'Journey_Purpose_of_Driver',
     'Sex_of_Driver',                    #done
-    'Age_Band_of_Driver',
+    'Age_Band_of_Driver',               #done
     'Engine_Capacity_(CC)',
     'Propulsion_Code',
     'Age_of_Vehicle',
@@ -104,7 +104,8 @@ translator_map = {
         [('skidded', map_from_dictionary(skidding_dictionary)),
          ('rollover', map_from_dictionary(rollover_dictionary)),
          ('jackknifing', map_from_dictionary(jackknifing_dictionary))
-         ]
+         ],
+    'Age_Band_of_Driver': [('driver_age', random_from_age_band)],
 }
 
 if __name__ == '__main__':
@@ -120,7 +121,7 @@ if __name__ == '__main__':
 
         for vehicle_data in reader:
             vehicle = {}
-            if not check_acc_id_for_data(vehicle_data):
+            if check_acc_id_for_data(vehicle_data):
                 for field in fields:
                     kwargs = get_kwargs(vehicle_data, field)
                     try:
@@ -132,7 +133,6 @@ if __name__ == '__main__':
                         pass
                 # TODO: count this based on casualties file
                 vehicle['passenger_count'] = 0
-                # print(vehicle)
+                print(vehicle)
                 vehicles.append(db_api.vehicle.new_from_dict(vehicle))
-        print vehicles[0]
         db_api.vehicle.insert(vehicles)

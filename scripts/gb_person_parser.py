@@ -7,11 +7,11 @@ Parsing casualties CSV files for Great Britain data and putting them into DB
 
 import sys
 import csv
-import random
 import db_api.person
 from parsing import common
 from parsing.common import translate_field, map_from_dictionary
-from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, get_acc_id_from_data
+from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, \
+    get_acc_id_from_data, random_from_age_band
 
 
 # To remember the names
@@ -44,16 +44,6 @@ def get_person_id(person_data):
     return person_id
 
 
-def random_from_age_band(value):
-    """
-    Mapping function for age band.
-    :param value - age band in the form of tuple (begin, end),
-    in the style of age_band_dictionary.
-    """
-    (begin, end) = value
-    return random.randint(begin, end)
-
-
 """
 Mapping dictionaries.
 """
@@ -77,22 +67,6 @@ car_passenger_dictionary = {
     '-1':   'UNKNOWN',
 }
 
-age_band_dictionary = {
-    '-1':    (-1, -1),
-    '1':     (0, 5),
-    '2':     (6, 10),
-    '3':     (11, 15),
-    '4':     (16, 20),
-    '5':     (21, 25),
-    '6':     (26, 35),
-    '7':     (36, 45),
-    '8':     (46, 55),
-    '9':     (56, 65),
-    '10':    (66, 75),
-    '11':    (75, 90),
-}
-
-
 
 """
 A mapping from labels in csv file to a tuple of new label for
@@ -107,8 +81,7 @@ translator_map = {
     'Sex_of_Casualty': [('sex', map_from_dictionary(casualty_sex_dictionary))],
     'Casualty_Severity': [('injury_level', map_from_dictionary(casualty_severity_dictionary))],
     'Car_Passenger': [('seated_pos', map_from_dictionary(car_passenger_dictionary))],
-    'Age_Band_of_Casualty':
-        [('age', lambda value: random_from_age_band(age_band_dictionary[value]))]
+    'Age_Band_of_Casualty': [('age', random_from_age_band)],
 }
 
 

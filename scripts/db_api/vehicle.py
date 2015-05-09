@@ -98,7 +98,6 @@ def insert(vehicle_list):
     cur = con.cursor()
 
     for vehicle in vehicle_list:
-        print(vehicle)
         cur.execute(insert_command(vehicle))
 
     cur.close()

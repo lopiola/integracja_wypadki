@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import random
 import db_api.accident
 import common
 
@@ -68,3 +69,31 @@ def get_veh_id(gb_data):
     acc_id = get_acc_id_from_data(gb_data)
     veh_id = common.get_veh_id(acc_id, int(veh_ref))
     return veh_id
+
+
+def random_from_age_band(value):
+    """
+    Returns a random age value form age band specified in value parameter.
+    :param value - age band label as in gb data.
+    """
+    (begin, end) = age_band_dictionary[value]
+    return random.randint(begin, end)
+
+
+"""
+Mapping from age band labels to age band boundaries
+"""
+age_band_dictionary = {
+    '-1':    (-1, -1),
+    '1':     (0, 5),
+    '2':     (6, 10),
+    '3':     (11, 15),
+    '4':     (16, 20),
+    '5':     (21, 25),
+    '6':     (26, 35),
+    '7':     (36, 45),
+    '8':     (46, 55),
+    '9':     (56, 65),
+    '10':    (66, 75),
+    '11':    (75, 90),
+}
