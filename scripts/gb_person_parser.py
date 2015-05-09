@@ -7,6 +7,7 @@ Parsing casualties CSV files for Great Britain data and putting them into DB
 
 import sys
 import csv
+import random
 import db_api.person
 from parsing import common
 from parsing.common import translate_field, map_from_dictionary
@@ -21,7 +22,7 @@ fields = [
     'Casualty_Reference',       #done
     'Casualty_Class',
     'Sex_of_Casualty',          #done
-    'Age_Band_of_Casualty',
+    'Age_Band_of_Casualty',     #done
     'Casualty_Severity',        #done
     'Pedestrian_Location',
     'Pedestrian_Movement',
@@ -34,10 +35,23 @@ fields = [
 
 
 def get_person_id(person_data):
+    """
+    Mapping function for person id.
+    """
     person_ref = person_data['Casualty_Reference']
     acc_id = get_acc_id_from_data(person_data)
     person_id = common.get_person_id(acc_id, int(person_ref))
     return person_id
+
+
+def random_from_age_band(value):
+    """
+    Mapping function for age band.
+    :param value - age band in the form of tuple (begin, end),
+    in the style of age_band_dictionary.
+    """
+    (begin, end) = value
+    return random.randint(begin, end)
 
 
 """
@@ -57,11 +71,27 @@ casualty_severity_dictionary = {
 
 car_passenger_dictionary = {
     '0':    'NONE',
-    # TODO: differentiate between driver and passenger
+    # TODO: differentiate between driver and passenger, 1 means front
     '1':    'PASSENGER',
     '2':    'BACK',
     '-1':   'UNKNOWN',
 }
+
+age_band_dictionary = {
+    '-1':    (-1, -1),
+    '1':     (0, 5),
+    '2':     (6, 10),
+    '3':     (11, 15),
+    '4':     (16, 20),
+    '5':     (21, 25),
+    '6':     (26, 35),
+    '7':     (36, 45),
+    '8':     (46, 55),
+    '9':     (56, 65),
+    '10':    (66, 75),
+    '11':    (75, 90),
+}
+
 
 
 """
@@ -75,16 +105,17 @@ translator_map = {
     'Vehicle_Reference': [('veh_id', get_veh_id)],
     'Casualty_Reference': [('id', get_person_id)],
     'Sex_of_Casualty': [('sex', map_from_dictionary(casualty_sex_dictionary))],
-    'Age_Band_of_Casualty': [('age', lambda value: 0)],
     'Casualty_Severity': [('injury_level', map_from_dictionary(casualty_severity_dictionary))],
     'Car_Passenger': [('seated_pos', map_from_dictionary(car_passenger_dictionary))],
+    'Age_Band_of_Casualty':
+        [('age', lambda value: random_from_age_band(age_band_dictionary[value]))]
 }
 
 
 def get_kwargs(person_data, field):
     """
     Build kwargs from accident data for a specific field.
-    Default is one pair value = field_value_as_string
+    Default is one pair: value = field_value_as_string
     """
     if field == '\xef\xbb\xbfAcc_Index':
         return {'acc_index': person_data[field]}
