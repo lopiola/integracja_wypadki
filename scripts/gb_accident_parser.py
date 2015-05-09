@@ -199,9 +199,7 @@ if __name__ == '__main__':
                     except ValueError:
                         # We do not want to map this field
                         pass
-                # TODO: Get fatalities count. Requires scanning casualties file
-                # (maybe set this to 0 and update when inserting casualties))
-                accident['fatalities_count'] = -1
+                accident['fatalities_count'] = 0
                 accidents.append(db_api.accident.new_from_dict(accident))
                 print(accident)
 

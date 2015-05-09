@@ -8,6 +8,7 @@ Parsing casualties CSV files for Great Britain data and putting them into DB
 import sys
 import csv
 import db_api.person
+import db_api.accident
 from parsing import common
 from parsing.common import translate_field, map_from_dictionary
 from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, \
@@ -99,6 +100,16 @@ def get_kwargs(person_data, field):
     return {'value': person_data[field]}
 
 
+def update_fatalities_counts(persons):
+    """
+    Increases fatalities counts for fatal victims on the persons list.
+    """
+    for person in persons:
+        if person['injury_level'] == 'FATAL':
+            acc_id = person['acc_id']
+            db_api.accident.increase_value(acc_id, 'fatalities_count')
+
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('Usage: {0} <csv_file>'.format(sys.argv[0]))
@@ -125,4 +136,5 @@ if __name__ == '__main__':
                 persons.append(db_api.person.new_from_dict(person))
                 print(person)
 
-        db_api.person.insert(persons)
+        # db_api.person.insert(persons)
+        update_fatalities_counts(persons)
