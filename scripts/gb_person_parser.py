@@ -62,12 +62,21 @@ casualty_severity_dictionary = {
 
 car_passenger_dictionary = {
     '0':    'NONE',
-    # TODO: differentiate between driver and passenger, 1 means front
     '1':    'PASSENGER',
     '2':    'BACK',
     '-1':   'UNKNOWN',
 }
 
+
+def is_driver(person_data):
+    return person_data['Casualty_Class'] == '1'
+
+
+def map_car_passenger(person_data, value):
+    position = map_from_dictionary(car_passenger_dictionary)(value)
+    if position == 'PASSENGER' and is_driver(person_data):
+        position = 'DRIVER'
+    return position
 
 """
 A mapping from labels in csv file to a tuple of new label for
@@ -81,7 +90,7 @@ translator_map = {
     'Casualty_Reference': [('id', get_person_id)],
     'Sex_of_Casualty': [('sex', map_from_dictionary(casualty_sex_dictionary))],
     'Casualty_Severity': [('injury_level', map_from_dictionary(casualty_severity_dictionary))],
-    'Car_Passenger': [('seated_pos', map_from_dictionary(car_passenger_dictionary))],
+    'Car_Passenger': [('seated_pos', map_car_passenger)],
     'Age_Band_of_Casualty': [('age', random_from_age_band)],
 }
 
@@ -97,6 +106,8 @@ def get_kwargs(person_data, field):
         return {'gb_data': person_data}
     if field == 'Casualty_Reference':
         return {'person_data': person_data}
+    if field == 'Car_Passenger':
+        return {'person_data': person_data, 'value': person_data[field]}
     return {'value': person_data[field]}
 
 
@@ -136,5 +147,5 @@ if __name__ == '__main__':
                 persons.append(db_api.person.new_from_dict(person))
                 print(person)
 
-        # db_api.person.insert(persons)
+        db_api.person.insert(persons)
         update_fatalities_counts(persons)
