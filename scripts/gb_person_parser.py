@@ -9,6 +9,7 @@ import sys
 import csv
 import db_api.person
 import db_api.accident
+import db_api.vehicle
 from parsing import common
 from parsing.common import translate_field, map_from_dictionary
 from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, \
@@ -18,16 +19,16 @@ from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, \
 # To remember the names
 
 fields = [
-    '\xef\xbb\xbfAcc_Index',    #done
-    'Vehicle_Reference',        #done
-    'Casualty_Reference',       #done
+    '\xef\xbb\xbfAcc_Index',        # done
+    'Vehicle_Reference',            # done
+    'Casualty_Reference',           #done
     'Casualty_Class',
-    'Sex_of_Casualty',          #done
-    'Age_Band_of_Casualty',     #done
-    'Casualty_Severity',        #done
+    'Sex_of_Casualty',              #done
+    'Age_Band_of_Casualty',         #done
+    'Casualty_Severity',            #done
     'Pedestrian_Location',
     'Pedestrian_Movement',
-    'Car_Passenger',
+    'Car_Passenger',                #done
     'Bus_or_Coach_Passenger',
     'Pedestrian_Road_Maintenance_Worker',
     'Casualty_Type',
@@ -49,22 +50,22 @@ def get_person_id(person_data):
 Mapping dictionaries.
 """
 casualty_sex_dictionary = {
-    '1':    'MALE',
-    '2':    'FEMALE',
-    '-1':   'UNKNOWN',
+    '1': 'MALE',
+    '2': 'FEMALE',
+    '-1': 'UNKNOWN',
 }
 
 casualty_severity_dictionary = {
-    '1':    'FATAL',
-    '2':    'SERIOUS',
-    '3':    'SLIGHT',
+    '1': 'FATAL',
+    '2': 'SERIOUS',
+    '3': 'SLIGHT',
 }
 
 car_passenger_dictionary = {
-    '0':    'NONE',
-    '1':    'PASSENGER',
-    '2':    'BACK',
-    '-1':   'UNKNOWN',
+    '0': 'NONE',
+    '1': 'PASSENGER',
+    '2': 'BACK',
+    '-1': 'UNKNOWN',
 }
 
 
@@ -73,10 +74,16 @@ def is_driver(person_data):
 
 
 def map_car_passenger(person_data, value):
+    """
+    Mapping function for car passenger. For differentiation
+    between front and back uses  car_passenger_dictionary and
+    between front passenger and driver uses the is_dirver function.
+    """
     position = map_from_dictionary(car_passenger_dictionary)(value)
     if position == 'PASSENGER' and is_driver(person_data):
         position = 'DRIVER'
     return position
+
 
 """
 A mapping from labels in csv file to a tuple of new label for
@@ -121,6 +128,18 @@ def update_fatalities_counts(persons):
             db_api.accident.increase_value(acc_id, 'fatalities_count')
 
 
+# TODO: Make sure if this makes sense at all, it might be that
+# since we only have casualties data, some vehicles will be empty
+def update_passengers_counts(persons):
+    """
+    Increases passengers counts for casualties that are car passengers.
+    """
+    for person in persons:
+        if person['seated_pos'] != 'NONE':
+            veh_id = person['veh_id']
+            db_api.vehicle.increase_value(veh_id, 'passenger_count')
+
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('Usage: {0} <csv_file>'.format(sys.argv[0]))
@@ -149,3 +168,4 @@ if __name__ == '__main__':
 
         db_api.person.insert(persons)
         update_fatalities_counts(persons)
+        update_passengers_counts(persons)

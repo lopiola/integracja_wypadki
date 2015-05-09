@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Manipulates the accident table
+Manipulates the vehicle table
 """
 
 from psycopg2 import connect
@@ -121,6 +121,60 @@ def delete(id_list):
     con.close()
 
 
+def select(veh_id, fields=None):
+    """
+    Selects specified data for the vehicle with veh_id.
+    :param fields: List of names of fields to fetch. If None of empty, SELECT * is performed.
+    """
+    user = common.get_user()
+    database = common.get_db_name()
+    con = connect(user=user, database=database)
+    cur = con.cursor()
+
+    cur.execute(select_command(veh_id, fields))
+    result = cur.fetchone()
+
+    cur.close()
+    con.commit()
+    con.close()
+
+    return result
+
+
+def update(veh_id, field_values):
+    """
+    Updates the values of some fields of the vehicle with veh_id.
+    :param field_values: dictionary of values to update. {field_name: new_value}.
+    :return: tuple with field values or None if no veh_id is found in the database.
+    """
+    user = common.get_user()
+    database = common.get_db_name()
+    con = connect(user=user, database=database)
+    cur = con.cursor()
+
+    cur.execute(update_command(veh_id, field_values))
+
+    cur.close()
+    con.commit()
+    con.close()
+
+
+def increase_value(veh_id, field):
+    """
+    Increases the value of a field for the vehicle with veh_id.
+    Raises ValueError if veh_id is not in database.
+    Raises TypeError if the field value is not integer.
+    """
+    accident = select(veh_id, [field])
+    if not accident:
+        raise ValueError("No such id: {id}".format(id=veh_id))
+    value, = accident
+    if not isinstance(value, int):
+        raise TypeError("Can't increase noninteger field")
+
+    update(veh_id, {field: value + 1})
+
+
 def create_table_command():
     return '''
 CREATE TABLE vehicle(
@@ -192,3 +246,35 @@ INSERT INTO vehicle VALUES (
 def delete_command(veh_id):
     command = '''DELETE FROM vehicle WHERE id = {id}'''
     return command.format(id=veh_id)
+
+
+def select_command(veh_id, fields=None):
+    command = '''SELECT {field_string} FROM vehicle WHERE id = {id}'''
+    if not fields or len(fields) == 0:
+        field_string = "*"
+    else:
+        field_string = ", ".join(fields)
+    return command.format(id=veh_id, field_string=field_string)
+
+
+def update_command(veh_id, fields):
+    command = '''UPDATE vehicle SET {field_list} WHERE id = {id}'''
+
+    field_list = ""
+    for (field, value) in fields.items():
+        field_list += get_field_update(field, value)
+
+    return command.format(id=veh_id, field_list=field_list)
+
+
+def get_field_update(field, value):
+    field_normal = "{field} = {value}"
+    field_string = "{field} = '{value}'"
+    if not isinstance(value, basestring):
+        field_format = field_normal
+    else:
+        field_format = field_string
+    return field_format.format(
+        field=field,
+        value=value
+    )

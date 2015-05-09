@@ -131,7 +131,6 @@ if __name__ == '__main__':
                     except ValueError:
                         # We do not want to map this field
                         pass
-                # TODO: count this based on casualties file
                 vehicle['passenger_count'] = 0
                 print(vehicle)
                 vehicles.append(db_api.vehicle.new_from_dict(vehicle))
