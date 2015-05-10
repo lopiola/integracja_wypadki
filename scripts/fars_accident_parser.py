@@ -57,17 +57,15 @@ try:
 
     accidents = []
 
-    dupa = 0
     for row in reader:
         year = get_int(row, year_index)
         month = get_int(row, month_index)
         day = get_int(row, day_index)
         hour = get_int(row, hour_index)
-        if hour > s23:
-            dupa += 1
         hour %= 24
         minute = get_int(row, minute_index)
         minute %= 60
+        # TODO jesli godzina nieznana to odrzucic
         timestamp = 'TIMESTAMP \'{0}-{1}-{2} {3}:{4}:00\''.format(year, month, day, hour, minute)
         new_accident = accident.new(
             # USA ids will be in form 1200700000001234
@@ -86,7 +84,6 @@ try:
             speed_limit=-1
         )
         accidents.append(new_accident)
-    print(dupa)
     # accident.insert(accidents)
 
 finally:
