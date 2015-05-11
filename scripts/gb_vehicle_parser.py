@@ -15,22 +15,22 @@ from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, ran
 field_names = [
     '\xef\xbb\xbfAcc_Index',            #done
     'Vehicle_Reference',                #done
-    'Vehicle_Type',
-    'Towing_and_Articulation',
-    'Vehicle_Manoeuvre',
-    'Vehicle_Location-Restricted_Lane',
+    'Vehicle_Type',                     #done
+    'Towing_and_Articulation',          #not applicable
+    'Vehicle_Manoeuvre',                #done
+    'Vehicle_Location-Restricted_Lane', #not applicable
     'Junction_Location',
     'Skidding_and_Overturning',         #done
-    'Hit_Object_in_Carriageway',
-    'Vehicle_Leaving_Carriageway',
-    'Hit_Object_off_Carriageway',
+    'Hit_Object_in_Carriageway',        #not applicable
+    'Vehicle_Leaving_Carriageway',      #not applicable
+    'Hit_Object_off_Carriageway',       #not applicable
     '1st_Point_of_Impact',
-    'Was_Vehicle_Left_Hand_Drive?',
-    'Journey_Purpose_of_Driver',
+    'Was_Vehicle_Left_Hand_Drive?',     #not applicable
+    'Journey_Purpose_of_Driver',        #not applicable
     'Sex_of_Driver',                    #done
     'Age_Band_of_Driver',               #done
     'Engine_Capacity_(CC)',
-    'Propulsion_Code',
+    'Propulsion_Code',                  #done
     'Age_of_Vehicle',
     'Driver_IMD_Decile',
     'Driver_Home_Area_Type'
@@ -53,41 +53,121 @@ def get_kwargs(vehicle_data, field):
 Mapping dictionaries.
 """
 driver_sex_dictionary = {
-    '1': 'MALE',
-    '2': 'FEMALE',
-    '3': 'UNKNOWN',
-    '-1': 'UNKNOWN',
+    '1':    'MALE',
+    '2':    'FEMALE',
+    '3':    'UNKNOWN',
+    '-1':   'UNKNOWN',
 }
 
 skidding_dictionary = {
-    '0': 'NO',
-    '1': 'YES',
-    '2': 'YES',
-    '3': 'NO',
-    '4': 'NO',
-    '5': 'NO',
-    '-1': 'UNKNOWN',
+    '0':    'NO',
+    '1':    'YES',
+    '2':    'YES',
+    '3':    'NO',
+    '4':    'NO',
+    '5':    'NO',
+    '-1':   'UNKNOWN',
 }
 
 rollover_dictionary = {
-    '0': 'NO',
-    '1': 'NO',
-    '2': 'YES',
-    '3': 'NO',
-    '4': 'YES',
-    '5': 'YES',
-    '-1': 'UNKNOWN',
+    '0':    'NO',
+    '1':    'NO',
+    '2':    'YES',
+    '3':    'NO',
+    '4':    'YES',
+    '5':    'YES',
+    '-1':   'UNKNOWN',
 }
 
 jackknifing_dictionary = {
-    '0': 'NO',
-    '1': 'NO',
-    '2': 'NO',
-    '3': 'YES',
-    '4': 'YES',
-    '5': 'NO',
-    '-1': 'UNKNOWN',
+    '0':    'NO',
+    '1':    'NO',
+    '2':    'NO',
+    '3':    'YES',
+    '4':    'YES',
+    '5':    'NO',
+    '-1':   'UNKNOWN',
 }
+
+type_dictionary = {
+    '1':    'OTHER',
+    '2':    'MOTORCYCLE',
+    '3':    'MOTORCYCLE',
+    '4':    'MOTORCYCLE',
+    '5':    'MOTORCYCLE',
+    '8':    'CAR',
+    '9':    'CAR',
+    '10':   'BUS',
+    '11':   'BUS',
+    '16':   'OTHER',
+    '17':   'AGRICULTURAL',
+    '18':   'OTHER',
+    '19':   'CARGO',
+    '20':   'CARGO',
+    '21':   'CARGO',
+    '22':   'OTHER',
+    '23':   'MOTORCYCLE',
+    '90':   'OTHER',
+    '97':   'MOTORCYCLE',
+    '98':   'CARGO',
+    '103':   'MOTORCYCLE',
+    '104':   'MOTORCYCLE',
+    '105':   'MOTORCYCLE',
+    '106':   'MOTORCYCLE',
+    '108':   'CAR',
+    '109':   'CAR',
+    '110':   'BUS',
+    '113':   'CARGO',
+    '-1':   'UNKNOWN',
+}
+
+maneuver_dictionary = {
+    '1':    'REVERSING',
+    '2':    'PARKED',
+    '3':    'HELD_UP',
+    '4':    'STOPPING',
+    '5':    'STARTING',
+    '6':    'U_TURN',
+    '7':    'LEFT',
+    '8':    'HELD_UP',
+    '9':    'RIGHT',
+    '10':   'HELD_UP',
+    '11':   'CHANGING_LANE',
+    '12':   'CHANGING_LANE',
+    '13':   'OVERTAKING',
+    '14':   'OVERTAKING',
+    '15':   'OVERTAKING',
+    '16':   'CURVING',
+    '17':   'CURVING',
+    '18':   'STRAIGHT',
+    '-1':   'UNKNOWN',
+
+}
+
+fuel_type_dictionary = {
+    '1':    'PETROL',
+    '2':    'OTHER',
+    '3':    'OTHER',
+    '4':    'OTHER',
+    '5':    'GAS',
+    '6':    'GAS',
+    '7':    'GAS',
+    '8':    'HYBRID',
+    '9':    'OTHER',
+    '10':   'OTHER',
+    '-1':   'UNKNOWN',
+
+}
+# TODO: Wouldn't OFFSIDE and NEARSIDE be better after all?
+impact_area_dictionary = {
+    '0':    'NON_COLLISION',
+    '1':    'FRONT',
+    '2':    'BACK',
+    '3':    'LEFT_SIDE',
+    '4':    'RIGHT_SIDE',
+    '-1':   'UNKNOWN',
+}
+
 
 """
 A mapping from labels in csv file to a tuple of new label for
@@ -98,7 +178,6 @@ that are passed in as kwargs.
 translator_map = {
     '\xef\xbb\xbfAcc_Index': [('acc_id', get_acc_id)],
     'Vehicle_Reference': [('id', get_veh_id)],
-    'Age_Band_of_Driver': [('driver_age', lambda value: 0)],
     'Sex_of_Driver': [('driver_sex', map_from_dictionary(driver_sex_dictionary))],
     'Skidding_and_Overturning':
         [('skidded', map_from_dictionary(skidding_dictionary)),
@@ -106,6 +185,10 @@ translator_map = {
          ('jackknifing', map_from_dictionary(jackknifing_dictionary))
          ],
     'Age_Band_of_Driver': [('driver_age', random_from_age_band)],
+    'Vehicle_Type': [('type', map_from_dictionary(type_dictionary))],
+    '1st_Point_of_Impact': [('first_impact_area', map_from_dictionary(impact_area_dictionary))],
+    'Propulsion_Code': [('fuel_type', map_from_dictionary(fuel_type_dictionary))],
+    'Vehicle_Manoeuvre': [('maneuver', map_from_dictionary(maneuver_dictionary))],
 }
 
 if __name__ == '__main__':
