@@ -10,6 +10,7 @@ import sys
 import db_api.accident
 from parsing.common import get_timestamp, translate_field, to_float, to_int, map_from_dictionary
 from parsing.gb_common import get_acc_id
+import cPickle as pickle
 
 # To help remember the names
 field_names = [
@@ -196,6 +197,7 @@ if __name__ == '__main__':
 
         fields = reader.fieldnames
         accidents = []
+        new_ids = {}
 
         for accident_data in reader:
             if is_fatal(accident_data):
@@ -220,5 +222,16 @@ if __name__ == '__main__':
         for i in xrange(len(sorted_accidents) - 1):
             if sorted_accidents[i]['id'] == sorted_accidents[i + 1]['id']:
                 sorted_accidents[i + 1]['id'] += 1000000000000
+
+        for accident in accidents:
+            new_ids[accident['id']] = True
+
+        with open("gb_ids.pickle", "wr") as pickle_file:
+            try:
+                ids = pickle.load(pickle_file)
+            except IOError:
+                ids = {}
+            ids.update(new_ids)
+            pickle.dump(ids, pickle_file)
 
         db_api.accident.insert(accidents)

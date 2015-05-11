@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import random
-import db_api.accident
 import common
+import cPickle as pickle
+import hashlib
 
 """
 Common functions for parsers of data from Great Britain.
@@ -49,13 +50,24 @@ def get_case_index(acc_index):
         int_value = char_value - ord('0')
         if 10 > int_value >= 0:
             char_value = int_value
-            multi = 10;
         else:
-            multi = 1000
+            char_value = char_value - ord('A') + 10
+        multi = 36
         case_index += char_value
         case_index *= multi
-    case_index /= 10
+    case_index /= 36
+    # print case_index
     return case_index
+
+
+# def get_case_index(acc_index):
+#     # m = hashlib.md5()
+#     # m.update(acc_index[5:])
+#     # case_index = int(m.hexdigest(), 16)
+#     case_index = hash(acc_index[5:])
+#     print acc_index[5:]
+#     print case_index
+#     return case_index
 
 
 def get_acc_id(acc_index):
@@ -68,13 +80,21 @@ def get_acc_id(acc_index):
     return get_gb_acc_id(year, case_index)
 
 
+ids = None
+
+
 def check_acc_id_for_data(gb_data):
     """
     Checks if accident id for this vehicle is in database.
     Ensures that we insert data about vehicles that took part in fatal crashes only.
     """
+    global ids
     acc_id = get_acc_id_from_data(gb_data)
-    return db_api.accident.select(acc_id) is not None
+    if not ids:
+        with open("gb_ids.pickle") as pickle_file:
+            ids = pickle.load(pickle_file)
+    return acc_id in ids
+    # return db_api.accident.select(acc_id) is not None
 
 
 def get_veh_id(gb_data):

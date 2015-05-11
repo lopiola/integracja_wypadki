@@ -20,8 +20,8 @@ def get_gb_acc_id(year, case_index):
     1234 means the case ID as in original data
     """
     try:
-        acc_id = 2000000000000000000
-        acc_id += year * 100000000000000
+        acc_id = 20000000000000000
+        acc_id += year * 100000000000
         acc_id += case_index
     except KeyError:
         raise ValueError("Country code incorrect")
