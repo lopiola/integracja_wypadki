@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import os
 
 import random
 import common
@@ -86,8 +87,11 @@ def init_ids():
     """
     Loads ids of fatal accidents in database from pickled dictionary.
     """
-    with open(GB_IDS_FILE) as pickle_file:
-        ids = pickle.load(pickle_file)
+    if not os.path.exists(GB_IDS_FILE):
+        ids = {}
+    else:
+        with open(GB_IDS_FILE) as pickle_file:
+            ids = pickle.load(pickle_file)
     return ids
 
 
@@ -97,17 +101,23 @@ Dict containing ids of fatal accidents present in database.
 GB_ACC_IDS = None
 
 
+def get_gb_ids():
+    global GB_ACC_IDS
+    if not GB_ACC_IDS:
+        GB_ACC_IDS = init_ids()
+    return GB_ACC_IDS
+
+
 def check_acc_id_for_data(gb_data):
     """
     Checks if accident id for this data is in fatal accident ids.
     Ensures that we insert data about vehicles that took part in fatal crashes only.
     """
-    global GB_ACC_IDS
-    if not GB_ACC_IDS:
-        GB_ACC_IDS = init_ids()
+
+    ids = get_gb_ids()
 
     acc_id = get_acc_id_from_data(gb_data)
-    return acc_id in GB_ACC_IDS
+    return acc_id in ids
 
 
 def get_veh_id(gb_data):

@@ -9,7 +9,7 @@ import csv
 import sys
 import db_api.accident
 from parsing.common import get_timestamp, translate_field, to_float, to_int, map_from_dictionary
-from parsing.gb_common import get_acc_id, GB_IDS_FILE
+from parsing.gb_common import get_acc_id, GB_IDS_FILE, get_gb_ids
 import cPickle as pickle
 
 
@@ -223,14 +223,11 @@ def update_ids(accidents):
     new_ids = {}
     for accident in accidents:
         new_ids[accident['id']] = True
-    with open(GB_IDS_FILE, "wr+") as pickle_file:
-        try:
-            ids = pickle.load(pickle_file)
-        except IOError:
-            ids = {}
-        except EOFError:
-            ids = {}
-        ids.update(new_ids)
+
+    ids = get_gb_ids()
+    ids.update(new_ids)
+
+    with open(GB_IDS_FILE, "w+") as pickle_file:
         pickle.dump(ids, pickle_file)
 
 
