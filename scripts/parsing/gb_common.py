@@ -14,6 +14,7 @@ from common import get_gb_acc_id
 
 GB_IDS_FILE = "gb_ids.pickle"
 
+
 def get_acc_id_from_data(gb_data):
     """
     Extracts accident index from Great Britain Data and converts it to global accident id.
@@ -73,12 +74,31 @@ def get_case_index(acc_index):
     return case_index
 
 
+"""
+A list of ids for which we get collisions when parsing vehicles.
+"""
+BLACKLISTED_IDS = {
+    '19909390E0155':    True,
+    '199093900321W':    True,
+    '19909390W0540':    True,
+}
+
+
 def get_acc_id(acc_index):
     """
     Returns global accident id based on accident index as in Great Britain original data.
+    For certain blacklisted ids returns -1 to avoid collisions.
     """
+    # Check if we can get collision from this acc_index.
+    # If so, return -1 to be safe.
+    if acc_index in BLACKLISTED_IDS:
+        return -1
+
     year = get_acc_year(acc_index)
     case_index = get_case_index(acc_index)
+
+    if case_index < 0:
+        return -1
 
     return get_gb_acc_id(year, case_index)
 
@@ -118,7 +138,6 @@ def check_acc_id_for_data(gb_data):
 
     acc_id = get_acc_id_from_data(gb_data)
     return acc_id in ids
-
 
 def get_veh_id(gb_data):
     """

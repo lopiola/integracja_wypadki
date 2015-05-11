@@ -178,6 +178,8 @@ if __name__ == '__main__':
         fields = reader.fieldnames
         vehicles = []
 
+        # id_dict = {}
+
         for vehicle_data in reader:
             vehicle = {}
             if check_acc_id_for_data(vehicle_data):
@@ -191,7 +193,14 @@ if __name__ == '__main__':
                         # We do not want to map this field
                         pass
                 vehicle['passenger_count'] = 0
-                print(vehicle)
+
+                # veh_id = vehicle['id']
+                # if veh_id in id_dict:
+                #     print(veh_id, id_dict[veh_id]['\xef\xbb\xbfAcc_Index'], vehicle_data['\xef\xbb\xbfAcc_Index'],
+                #           vehicle_data['Vehicle_Reference'])
+                # else:
+                #     id_dict[veh_id] = vehicle_data
+                # print(vehicle)
                 vehicles.append(db_api.vehicle.new_from_dict(vehicle))
 
         db_api.vehicle.insert(vehicles)

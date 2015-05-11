@@ -256,7 +256,7 @@ if __name__ == '__main__':
                         # We do not want to map this field
                         pass
 
-                # TODO: Change this and cound lat/long from osgr
+                # TODO: Change this and count lat/long from osgr
                 # For now setting to incorrect value (lat/long) can't be more than 180
                 if 'latitude' not in accident:
                     accident['latitude'] = 200.0
@@ -266,7 +266,7 @@ if __name__ == '__main__':
                     accident['fatalities_count'] = 0
                     accidents.append(db_api.accident.new_from_dict(accident))
 
-                    print accident
+                    # print accident
 
         db_api.accident.insert(accidents)
         update_ids(accidents)

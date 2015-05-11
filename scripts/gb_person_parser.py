@@ -150,7 +150,7 @@ if __name__ == '__main__':
                         # We do not want to map this field
                         pass
                 persons.append(db_api.person.new_from_dict(person))
-                print(person)
+                # print(person)
 
         db_api.person.insert(persons)
         update_fatalities_counts(persons)
