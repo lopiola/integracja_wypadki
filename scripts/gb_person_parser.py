@@ -4,6 +4,7 @@
 """
 Parsing casualties CSV files for Great Britain data and putting them into DB
 """
+from collections import defaultdict
 
 import sys
 import csv
@@ -122,22 +123,27 @@ def update_fatalities_counts(persons):
     """
     Increases fatalities counts for fatal victims on the persons list.
     """
+    fatalities_dict = defaultdict(int)
     for person in persons:
         if person['injury_level'] == 'FATAL':
             acc_id = person['acc_id']
-            db_api.accident.increase_value(acc_id, 'fatalities_count')
+            fatalities_dict[acc_id] += 1
+
+    for acc_id, num in fatalities_dict.iteritems():
+        db_api.accident.set_field(acc_id, 'fatalities_count', num)
 
 
-# TODO: Make sure if this makes sense at all, it might be that
-# since we only have casualties data, some vehicles will be empty
 def update_passengers_counts(persons):
     """
     Increases passengers counts for casualties that are car passengers.
     """
+    passengers_dict = defaultdict(int)
     for person in persons:
         if person['seated_pos'] != 'NONE':
             veh_id = person['veh_id']
-            db_api.vehicle.increase_value(veh_id, 'passenger_count')
+            passengers_dict[veh_id] += 1
+    for veh_id, num in passengers_dict.iteritems():
+        db_api.vehicle.set_field(veh_id, 'passenger_count', num)
 
 
 if __name__ == '__main__':

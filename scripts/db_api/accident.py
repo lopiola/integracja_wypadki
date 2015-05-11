@@ -163,20 +163,11 @@ def update(acc_id, field_values):
     con.close()
 
 
-def increase_value(acc_id, field):
+def set_field(acc_id, field, value):
     """
-    Increases the value of a field for the accident with acc_id.
-    Raises ValueError if acc_id is not in database.
-    Raises TypeError if the field value is not integer.
+    Sets the value of a field for the accident with acc_id.
     """
-    accident = select(acc_id, [field])
-    if not accident:
-        raise ValueError("No such id: {id}".format(id=acc_id))
-    value, = accident
-    if not isinstance(value, int):
-        raise TypeError("Can't increase noninteger field")
-
-    update(acc_id, {field: value + 1})
+    update(acc_id, {field: value})
 
 
 def create_table_command():

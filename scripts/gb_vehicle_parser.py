@@ -134,7 +134,5 @@ if __name__ == '__main__':
                 vehicle['passenger_count'] = 0
                 print(vehicle)
                 vehicles.append(db_api.vehicle.new_from_dict(vehicle))
-            else:
-                print vehicle_data['\xef\xbb\xbfAcc_Index']
 
         db_api.vehicle.insert(vehicles)

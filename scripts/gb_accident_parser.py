@@ -9,10 +9,11 @@ import csv
 import sys
 import db_api.accident
 from parsing.common import get_timestamp, translate_field, to_float, to_int, map_from_dictionary
-from parsing.gb_common import get_acc_id
+from parsing.gb_common import get_acc_id, GB_IDS_FILE
 import cPickle as pickle
 
 # To help remember the names
+
 field_names = [
     '\xef\xbb\xbfAccident_Index',       #done
     'Location_Easting_OSGR',
@@ -90,10 +91,11 @@ def get_timestamp_from_date_time(date, time):
         return None
     return get_timestamp(**datetime)
 
+
 KILOMETERS_IN_MILE = 1.60934
 
+
 def mph_to_kmph(mph):
-    # TODO: Should it be int?
     return int(mph * KILOMETERS_IN_MILE + 0.5)
 
 
@@ -160,7 +162,6 @@ translator_map = {
     'Longitude': [('longitude', to_float)],
     'Latitude': [('latitude', to_float)],
     'Date': [('timestamp', get_timestamp_from_date_time)],
-    # TODO: check day of week codes
     'Day_of_Week': [('day_of_week', to_float)],
     'Number_of_Casualties': [('persons_count', to_int)],
     'Number_of_Vehicles': [('vehicles_count', to_int)],
@@ -186,6 +187,20 @@ def get_kwargs(accident_data, field):
 
     return {'value': accident_data[field]}
 
+
+def update_ids(accidents):
+    new_ids = {}
+    for accident in accidents:
+        new_ids[accident['id']] = True
+    with open(GB_IDS_FILE, "ar+") as pickle_file:
+        try:
+            ids = pickle.load(pickle_file)
+        except IOError, EOFError:
+            ids = {}
+        ids.update(new_ids)
+        pickle.dump(ids, pickle_file)
+
+
 # TODO: deal with cases where no lat/long given, only osgr
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -197,7 +212,6 @@ if __name__ == '__main__':
 
         fields = reader.fieldnames
         accidents = []
-        new_ids = {}
 
         for accident_data in reader:
             if is_fatal(accident_data):
@@ -216,22 +230,7 @@ if __name__ == '__main__':
                 if accident['timestamp'] and 'latitude' in accident:
                     accident['fatalities_count'] = 0
                     accidents.append(db_api.accident.new_from_dict(accident))
-                # print(accident)
-
-        sorted_accidents = sorted(accidents, key=lambda e: dict.get(e, 'id'))
-        for i in xrange(len(sorted_accidents) - 1):
-            if sorted_accidents[i]['id'] == sorted_accidents[i + 1]['id']:
-                sorted_accidents[i + 1]['id'] += 1000000000000
-
-        for accident in accidents:
-            new_ids[accident['id']] = True
-
-        with open("gb_ids.pickle", "wr") as pickle_file:
-            try:
-                ids = pickle.load(pickle_file)
-            except IOError:
-                ids = {}
-            ids.update(new_ids)
-            pickle.dump(ids, pickle_file)
 
         db_api.accident.insert(accidents)
+        update_ids(accidents)
+

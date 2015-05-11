@@ -4,7 +4,6 @@
 import random
 import common
 import cPickle as pickle
-import hashlib
 
 """
 Common functions for parsers of data from Great Britain.
@@ -12,6 +11,7 @@ Common functions for parsers of data from Great Britain.
 
 from common import get_gb_acc_id
 
+GB_IDS_FILE = "gb_ids.pickle"
 
 def get_acc_id_from_data(gb_data):
     """
@@ -44,30 +44,32 @@ def get_acc_year(acc_index):
 
 
 def get_case_index(acc_index):
+    """
+    Returns the unique for a year case index from a given accident index.
+    Looks at all digits and letters but the year that is in the beginning.
+    """
     case_index = 0
-    for char in acc_index[5:]:
+    num = 0
+    letters = []
+    numbers = []
+    for char in acc_index[4:]:
         char_value = ord(char)
         int_value = char_value - ord('0')
         if 10 > int_value >= 0:
-            char_value = int_value
+            numbers.append(int_value)
         else:
-            char_value = char_value - ord('A') + 10
-        multi = 36
-        case_index += char_value
-        case_index *= multi
-    case_index /= 36
-    # print case_index
+            letters.append(char_value - ord('A') + 10)
+            num += 1
+    for letter in letters:
+        case_index += letter
+        case_index *= 36
+
+    for number in numbers:
+        case_index += number
+        case_index *= 10
+
+    case_index /= 10
     return case_index
-
-
-# def get_case_index(acc_index):
-#     # m = hashlib.md5()
-#     # m.update(acc_index[5:])
-#     # case_index = int(m.hexdigest(), 16)
-#     case_index = hash(acc_index[5:])
-#     print acc_index[5:]
-#     print case_index
-#     return case_index
 
 
 def get_acc_id(acc_index):
@@ -80,21 +82,32 @@ def get_acc_id(acc_index):
     return get_gb_acc_id(year, case_index)
 
 
-ids = None
+def init_ids():
+    """
+    Loads ids of fatal accidents in database from pickled dictionary.
+    """
+    with open(GB_IDS_FILE) as pickle_file:
+        ids = pickle.load(pickle_file)
+    return ids
+
+
+"""
+Dict containing ids of fatal accidents present in database.
+"""
+GB_ACC_IDS = None
 
 
 def check_acc_id_for_data(gb_data):
     """
-    Checks if accident id for this vehicle is in database.
+    Checks if accident id for this data is in fatal accident ids.
     Ensures that we insert data about vehicles that took part in fatal crashes only.
     """
-    global ids
+    global GB_ACC_IDS
+    if not GB_ACC_IDS:
+        GB_ACC_IDS = init_ids()
+
     acc_id = get_acc_id_from_data(gb_data)
-    if not ids:
-        with open("gb_ids.pickle") as pickle_file:
-            ids = pickle.load(pickle_file)
-    return acc_id in ids
-    # return db_api.accident.select(acc_id) is not None
+    return acc_id in GB_ACC_IDS
 
 
 def get_veh_id(gb_data):
@@ -131,5 +144,5 @@ age_band_dictionary = {
     '8':     (46, 55),
     '9':     (56, 65),
     '10':    (66, 75),
-    '11':    (75, 90),
+    '11':    (75, 95),
 }
