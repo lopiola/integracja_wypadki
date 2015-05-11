@@ -11,15 +11,15 @@ import common
 
 constraints = {
     'country': ['USA', 'GB'],
-    'relation_to_junction': ['UNKNOWN'],
+    'relation_to_junction': ['UNKNOWN', 'NON_JUNCTION', 'INTERSECTION', 'DRIVEWAY', 'RAMP'],
     'snow': ['YES', 'NO', 'UNKNOWN'],
     'rain': ['YES', 'NO', 'UNKNOWN'],
     'wind': ['YES', 'NO', 'UNKNOWN'],
     'fog': ['YES', 'NO', 'UNKNOWN'],
-    'road_class': ['UNKNOWN'],
-    'surface_cond': ['UNKNOWN'],
-    'lighting': ['UNKNOWN'],
-    'traffic_control': ['UNKNOWN'],
+    'road_class': ['UNKNOWN', 'MOTORWAY', 'PRINCIPAL', 'MAJOR', 'MINOR', 'UNCLASSIFIED'],
+    'surface_cond': ['UNKNOWN', 'DRY', 'WET', 'SNOW', 'ICE', 'FLOOD', 'OTHER'],
+    'lighting': ['UNKNOWN', 'DAYLIGHT', 'DARK_LIGHTED', 'DARK'],
+    'traffic_control': ['UNKNOWN', 'TRAFFIC_SIGNAL', 'SIGNAL_MALF', 'STOP_SIGN', 'YIELD_OR_NONE'],
     'other_conditions': ['UNKNOWN']
 }
 

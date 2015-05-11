@@ -10,16 +10,17 @@ from psycopg2 import connect
 import common
 
 constraints = {
-    'type': ['UNKNOWN'],
+    'type': ['UNKNOWN', 'CAR', 'MOTORCYCLE', 'BUS', 'CARGO', 'AGRICULTURAL', 'OTHER'],
     'make': ['UNKNOWN'],
     'model': ['UNKNOWN'],
-    'fuel_type': ['UNKNOWN'],
+    'fuel_type': ['UNKNOWN', 'DIESEL', 'GAS', 'PETROL', 'HYBRID', 'OTHER'],
     'hit_and_run': ['YES', 'NO', 'UNKNOWN'],
     'skidded': ['YES', 'NO', 'UNKNOWN'],
     'rollover': ['YES', 'NO', 'UNKNOWN'],
     'jackknifing': ['YES', 'NO', 'UNKNOWN'],
-    'first_impact_area': ['UNKNOWN'],
-    'maneuver': ['UNKNOWN'],
+    'first_impact_area': ['UNKNOWN', 'FRONT', 'BACK', 'LEFT_SIDE', 'RIGHT_SIDE', 'NON_COLLISION'],
+    'maneuver': ['UNKNOWN', 'STRAIGHT', 'PARKED', 'REVERSING', 'U_TURN', 'LEFT', 'RIGHT', 'CHANGING_LANE',
+                 'OVERTAKING', 'HELD_UP', 'STOPPING', 'STARTING', 'CURVING'],
     'prior_location': ['UNKNOWN'],
     'driver_drinking': ['YES', 'NO', 'UNKNOWN']
 }
