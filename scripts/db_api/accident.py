@@ -19,7 +19,7 @@ constraints = {
     'road_class': ['UNKNOWN', 'MOTORWAY', 'PRINCIPAL', 'MAJOR', 'MINOR', 'UNCLASSIFIED'],
     'surface_cond': ['UNKNOWN', 'DRY', 'WET', 'SNOW', 'ICE', 'FLOOD', 'OTHER'],
     'lighting': ['UNKNOWN', 'DAYLIGHT', 'DARK_LIGHTED', 'DARK'],
-    'traffic_control': ['UNKNOWN', 'TRAFFIC_SIGNAL', 'SIGNAL_MALF', 'STOP_SIGN', 'YIELD_OR_NONE'],
+    'traffic_control': ['UNKNOWN', 'TRAFFIC_SIGNAL', 'SIGNAL_MALF', 'STOP_SIGN', 'YIELD_OR_NONE', 'AUTH_PERSON'],
     'other_conditions': ['UNKNOWN']
 }
 

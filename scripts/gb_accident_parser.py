@@ -20,33 +20,33 @@ field_names = [
     'Location_Northing_OSGR',
     'Longitude',                        #done
     'Latitude',                         #done
-    'Police_Force',
+    'Police_Force',                     #not applicable
     'Accident_Severity',                #done
     'Number_of_Vehicles',               #done
     'Number_of_Casualties',             #done
     'Date',                             #done
-    'Day_of_Week',
+    'Day_of_Week',                      #done
     'Time',                             #done
-    'Local_Authority_(District)',
-    'Local_Authority_(Highway)',
-    '1st_Road_Class',
-    '1st_Road_Number',
-    'Road_Type',
+    'Local_Authority_(District)',       #not applicable
+    'Local_Authority_(Highway)',        #not applicable
+    '1st_Road_Class',                   #done
+    '1st_Road_Number',                  #not applicable
+    'Road_Type',                        #not applicable
     'Speed_limit',                      #done
-    'Junction_Detail',
-    'Junction_Control',
-    '2nd_Road_Class',
-    '2nd_Road_Number',
-    'Pedestrian_Crossing-Human_Control',
-    'Pedestrian_Crossing-Physical_Facilities',
-    'Light_Conditions',
+    'Junction_Detail',                  #done
+    'Junction_Control',                 #done
+    '2nd_Road_Class',                   #not applicable
+    '2nd_Road_Number',                  #not applicable
+    'Pedestrian_Crossing-Human_Control',#not applicable
+    'Pedestrian_Crossing-Physical_Facilities',#not applicable
+    'Light_Conditions',                 #done
     'Weather_Conditions',               #done
-    'Road_Surface_Conditions',
-    'Special_Conditions_at_Site',
+    'Road_Surface_Conditions',          #done
+    'Special_Conditions_at_Site',       #done
     'Carriageway_Hazards',
     'Urban_or_Rural_Area',
-    'Did_Police_Officer_Attend_Scene_of_Accident',
-    'LSOA_of_Accident_Location'
+    'Did_Police_Officer_Attend_Scene_of_Accident', #not applicable
+    'LSOA_of_Accident_Location'         #not applicable
 ]
 
 
@@ -150,7 +150,69 @@ fog_dictionary = {
     '-1':   'UNKNOWN',
 }
 
+road_class_dictionary = {
+    '1':    'MOTORWAY',
+    '2':    'MOTORWAY',
+    '3':    'PRINCIPAL',
+    '4':    'MAJOR',
+    '5':    'MINOR',
+    '6':    'UNCLASSIFIED',
+    '-1':   'UNKNOWN',
+}
 
+junction_dictionary = {
+    '0':    'NON_JUNCTION',
+    '1':    'INTERSECTION',
+    '2':    'INTERSECTION',
+    '3':    'INTERSECTION',
+    '4':    'INTERSECTION',
+    '5':    'RAMP',
+    '6':    'INTERSECTION',
+    '7':    'INTERSECTION',
+    '8':    'DRIVEWAY',
+    '9':    'INTERSECTION',
+    '-1':    'UNKNOWN',
+}
+
+surface_dictionary = {
+    '1':    'DRY',
+    '2':    'WET',
+    '3':    'SNOW',
+    '4':    'ICE',
+    '5':    'FLOOD',
+    '6':    'OTHER',
+    '7':    'OTHER',
+    '-1':    'UNKNOWN',
+}
+
+lighting_dictionary = {
+    '1':    'DAYLIGHT',
+    '4':    'DARK_LIGHTED',
+    '5':    'DARK',
+    '6':    'DARK',
+    '7':    'DARK',
+    '-1':   'UNKNOWN',
+}
+
+junction_control_dictionary = {
+    '0':    'YIELD_OR_NONE',
+    '1':    'AUTH_PERSON',
+    '2':    'TRAFFIC_SIGNAL',
+    '3':    'STOP_SIGN',
+    '4':    'YIELD_OR_NONE',
+    '-1':   'UNKNOWN',
+}
+
+
+def is_signal_malfunction(special_conditions):
+    return special_conditions in ['1', '2']
+
+
+def map_junction_control(junction_control, special_conditions):
+    if is_signal_malfunction(special_conditions):
+        return 'SIGNAL_MALF'
+    else:
+        return junction_control_dictionary[junction_control]
 """
 A mapping from labels in csv file to a tuple of new label for
 database and function for transforming old value into new one.
@@ -171,7 +233,12 @@ translator_map = {
         ('rain', map_from_dictionary(rain_dictionary)),
         ('fog', map_from_dictionary(fog_dictionary)),
         ('wind', map_from_dictionary(wind_dictionary))
-    ]
+    ],
+    '1st_Road_Class': [('road_class', map_from_dictionary(road_class_dictionary))],
+    'Junction_Detail': [('relation_to_junction', map_from_dictionary(junction_dictionary))],
+    'Road_Surface_Conditions': [('surface_cond', map_from_dictionary(surface_dictionary))],
+    'Light_Conditions': [('lighting', map_from_dictionary(lighting_dictionary))],
+    'Junction_Control': [('traffic_control', map_junction_control)]
 }
 
 
@@ -184,7 +251,8 @@ def get_kwargs(accident_data, field):
         return {'acc_index': accident_data[field]}
     if field == 'Date':
         return {'date': accident_data['Date'], 'time': accident_data['Time']}
-
+    if field == 'Junction_Control':
+        return {'junction_control': accident_data[field], 'special_conditions': accident_data['Special_Conditions_at_Site']}
     return {'value': accident_data[field]}
 
 
@@ -192,16 +260,17 @@ def update_ids(accidents):
     new_ids = {}
     for accident in accidents:
         new_ids[accident['id']] = True
-    with open(GB_IDS_FILE, "ar+") as pickle_file:
+    with open(GB_IDS_FILE, "wr+") as pickle_file:
         try:
             ids = pickle.load(pickle_file)
-        except IOError, EOFError:
+        except IOError:
+            ids = {}
+        except EOFError:
             ids = {}
         ids.update(new_ids)
         pickle.dump(ids, pickle_file)
 
 
-# TODO: deal with cases where no lat/long given, only osgr
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('Usage: {0} <csv_file>'.format(sys.argv[0]))
@@ -227,9 +296,17 @@ if __name__ == '__main__':
                         # We do not want to map this field
                         pass
 
-                if accident['timestamp'] and 'latitude' in accident:
+                # TODO: Change this and cound lat/long from osgr
+                # For now setting to incorrect value (lat/long) can't be more than 180
+                if 'latitude' not in accident:
+                    accident['latitude'] = 200.0
+                    accident['longitude'] = 200.0
+
+                if accident['timestamp']:
                     accident['fatalities_count'] = 0
                     accidents.append(db_api.accident.new_from_dict(accident))
+
+                    print accident
 
         db_api.accident.insert(accidents)
         update_ids(accidents)
