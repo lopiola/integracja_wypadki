@@ -20,8 +20,8 @@ def get_gb_acc_id(year, case_index):
     1234 means the case ID as in original data
     """
     try:
-        acc_id = 20000000000000000
-        acc_id += year * 1000000000000
+        acc_id = 2000000000000000
+        acc_id += year * 100000000000
         acc_id += case_index
     except KeyError:
         raise ValueError("Country code incorrect")
@@ -42,7 +42,7 @@ def get_gb_veh_id(acc_id, vehicle_index):
     return veh_id
 
 
-def get_gb_person_id(acc_id, person_index):
+def get_gb_person_id(acc_id, vehicle_index, person_index):
     """
     Returns global person id for GB, year and index of accident.
 
@@ -50,7 +50,8 @@ def get_gb_person_id(acc_id, person_index):
     where Vehicle_index is two digits max.
     """
 
-    person_id = acc_id * 100
+    person_id = acc_id * 1000
+    person_id += vehicle_index * 100
     person_id += person_index
 
     return person_id

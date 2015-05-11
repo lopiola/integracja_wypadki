@@ -22,8 +22,9 @@ def get_person_id(person_data):
     Mapping function for person id.
     """
     person_ref = person_data['Casualty_Reference']
+    veh_ref = person_data['Vehicle_Reference']
     acc_id = get_acc_id_from_data(person_data)
-    person_id = common.get_gb_person_id(acc_id, int(person_ref))
+    person_id = common.get_gb_person_id(acc_id, int(veh_ref), int(person_ref))
     return person_id
 
 
