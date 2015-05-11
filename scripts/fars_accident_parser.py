@@ -24,7 +24,6 @@ try:
     mapper = FARSAccidentMapper(first_row)
 
     accidents = []
-
     for row in reader:
         if mapper.valid(row):
             new_accident = accident.new(
@@ -50,7 +49,6 @@ try:
                 other_conditions=mapper.other_conditions(row)
             )
             accidents.append(new_accident)
-
     accident.insert(accidents)
 
 finally:
