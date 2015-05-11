@@ -12,43 +12,6 @@ from parsing.common import get_timestamp, translate_field, to_float, to_int, map
 from parsing.gb_common import get_acc_id, GB_IDS_FILE
 import cPickle as pickle
 
-# To help remember the names
-
-field_names = [
-    '\xef\xbb\xbfAccident_Index',       #done
-    'Location_Easting_OSGR',
-    'Location_Northing_OSGR',
-    'Longitude',                        #done
-    'Latitude',                         #done
-    'Police_Force',                     #not applicable
-    'Accident_Severity',                #done
-    'Number_of_Vehicles',               #done
-    'Number_of_Casualties',             #done
-    'Date',                             #done
-    'Day_of_Week',                      #done
-    'Time',                             #done
-    'Local_Authority_(District)',       #not applicable
-    'Local_Authority_(Highway)',        #not applicable
-    '1st_Road_Class',                   #done
-    '1st_Road_Number',                  #not applicable
-    'Road_Type',                        #not applicable
-    'Speed_limit',                      #done
-    'Junction_Detail',                  #done
-    'Junction_Control',                 #done
-    '2nd_Road_Class',                   #not applicable
-    '2nd_Road_Number',                  #not applicable
-    'Pedestrian_Crossing-Human_Control',#not applicable
-    'Pedestrian_Crossing-Physical_Facilities',#not applicable
-    'Light_Conditions',                 #done
-    'Weather_Conditions',               #done
-    'Road_Surface_Conditions',          #done
-    'Special_Conditions_at_Site',       #done
-    'Carriageway_Hazards',
-    'Urban_or_Rural_Area',
-    'Did_Police_Officer_Attend_Scene_of_Accident', #not applicable
-    'LSOA_of_Accident_Location'         #not applicable
-]
-
 
 def is_fatal(accident_data):
     if int(accident_data['Accident_Severity']) == 1:

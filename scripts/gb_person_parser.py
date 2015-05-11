@@ -17,26 +17,6 @@ from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, \
     get_acc_id_from_data, random_from_age_band
 
 
-# To remember the names
-
-fields = [
-    '\xef\xbb\xbfAcc_Index',        # done
-    'Vehicle_Reference',            # done
-    'Casualty_Reference',           #done
-    'Casualty_Class',
-    'Sex_of_Casualty',              #done
-    'Age_Band_of_Casualty',         #done
-    'Casualty_Severity',            #done
-    'Pedestrian_Location',
-    'Pedestrian_Movement',
-    'Car_Passenger',                #done
-    'Bus_or_Coach_Passenger',
-    'Pedestrian_Road_Maintenance_Worker',
-    'Casualty_Type',
-    'Casualty_Home_Area_Type'
-]
-
-
 def get_person_id(person_data):
     """
     Mapping function for person id.

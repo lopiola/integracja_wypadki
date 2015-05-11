@@ -12,30 +12,6 @@ import db_api.accident
 from parsing.common import translate_field, map_from_dictionary
 from parsing.gb_common import get_acc_id, check_acc_id_for_data, get_veh_id, random_from_age_band
 
-field_names = [
-    '\xef\xbb\xbfAcc_Index',            #done
-    'Vehicle_Reference',                #done
-    'Vehicle_Type',                     #done
-    'Towing_and_Articulation',          #not applicable
-    'Vehicle_Manoeuvre',                #done
-    'Vehicle_Location-Restricted_Lane', #not applicable
-    'Junction_Location',
-    'Skidding_and_Overturning',         #done
-    'Hit_Object_in_Carriageway',        #not applicable
-    'Vehicle_Leaving_Carriageway',      #not applicable
-    'Hit_Object_off_Carriageway',       #not applicable
-    '1st_Point_of_Impact',
-    'Was_Vehicle_Left_Hand_Drive?',     #not applicable
-    'Journey_Purpose_of_Driver',        #not applicable
-    'Sex_of_Driver',                    #done
-    'Age_Band_of_Driver',               #done
-    'Engine_Capacity_(CC)',
-    'Propulsion_Code',                  #done
-    'Age_of_Vehicle',
-    'Driver_IMD_Decile',
-    'Driver_Home_Area_Type'
-]
-
 
 def get_kwargs(vehicle_data, field):
     """
