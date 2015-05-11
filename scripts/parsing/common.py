@@ -20,8 +20,8 @@ def get_gb_acc_id(year, case_index):
     1234 means the case ID as in original data
     """
     try:
-        acc_id = 2000000000000000
-        acc_id += year * 100000000000
+        acc_id = 2000000000000000000
+        acc_id += year * 100000000000000
         acc_id += case_index
     except KeyError:
         raise ValueError("Country code incorrect")
@@ -59,7 +59,6 @@ def get_gb_person_id(acc_id, person_index):
 def get_usa_acc_id(year, case_index):
     """
     Returns global accident id for USA, year and index of accident.
-
     USA ids will be in form 1200700000001234
     1 at the beginning means it is from USA
     2007 means the year
