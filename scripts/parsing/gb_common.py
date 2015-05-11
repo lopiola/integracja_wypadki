@@ -83,7 +83,7 @@ def get_veh_id(gb_data):
     """
     veh_ref = gb_data['Vehicle_Reference']
     acc_id = get_acc_id_from_data(gb_data)
-    veh_id = common.get_veh_id(acc_id, int(veh_ref))
+    veh_id = common.get_gb_veh_id(acc_id, int(veh_ref))
     return veh_id
 
 

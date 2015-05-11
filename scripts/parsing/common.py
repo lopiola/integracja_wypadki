@@ -8,42 +8,19 @@ Common functions for parsers.
 """
 Translating dictionary for country codes
 """
-country_code = {
-    'USA': 1,
-    'GB': 2
-}
-
-
-def get_usa_acc_id(year, case_index):
-    """
-    Returns id for usa cases.
-    """
-    return get_acc_id(year, case_index, 'USA')
 
 
 def get_gb_acc_id(year, case_index):
     """
-    Returns id for Great Britain cases
-    """
-    return get_acc_id(year, case_index, 'GB')
-
-
-def get_acc_id(year, case_index, country):
-    """
-    Returns global accident id according to country, year and index of accident.
-
-    USA ids will be in form 1200700000001234
-    1 at the beginning means it is from USA
-    2007 means the year
-    1234 means the case ID as in FARS data
+    Returns global accident id for GB, year and index of accident.
 
     GB ids will be in form 2200700000001234
     2 at the beginning means it is from Great Britain
     2007 means the year
-    1234 means the case ID as in original data  
+    1234 means the case ID as in original data
     """
     try:
-        acc_id = country_code[country] * 1000000000000000000
+        acc_id = 2000000000000000000
         acc_id += year * 100000000000000
         acc_id += case_index
     except KeyError:
@@ -51,9 +28,9 @@ def get_acc_id(year, case_index, country):
     return acc_id
 
 
-def get_veh_id(acc_id, vehicle_index):
+def get_gb_veh_id(acc_id, vehicle_index):
     """
-    Returns global vehicle id according to country, year and index of accident.
+    Returns global vehicle id for GB, year and index of accident.
 
     The id is constructed as <Acc_id><Vehicle_index>
     where Vehicle_index is two digits max.
@@ -65,15 +42,60 @@ def get_veh_id(acc_id, vehicle_index):
     return veh_id
 
 
-def get_person_id(acc_id, person_index):
+def get_gb_person_id(acc_id, person_index):
     """
-    Returns global person id according to country, year and index of accident.
+    Returns global person id for GB, year and index of accident.
 
     The id is constructed as <Acc_id><Person_index>
     where Vehicle_index is two digits max.
     """
 
     person_id = acc_id * 100
+    person_id += person_index
+
+    return person_id
+
+
+def get_usa_acc_id(year, case_index):
+    """
+    Returns global accident id for USA, year and index of accident.
+    USA ids will be in form 1200700000001234
+    1 at the beginning means it is from USA
+    2007 means the year
+    1234 means the case ID as in FARS data
+    """
+    try:
+        acc_id = 1000000000000
+        acc_id += year * 100000000
+        acc_id += case_index
+    except KeyError:
+        raise ValueError("Country code incorrect")
+    return acc_id
+
+
+def get_usa_veh_id(acc_id, vehicle_index):
+    """
+    Returns global vehicle id for USA, year and index of accident.
+
+    The id is constructed as <Acc_id><Vehicle_index>
+    where Vehicle_index is three digits max.
+    """
+
+    veh_id = acc_id * 1000
+    veh_id += vehicle_index
+
+    return veh_id
+
+
+def get_usa_person_id(acc_id, veh_id, person_index):
+    """
+    Returns global person id for USA, year and index of accident.
+
+    The id is constructed as <Acc_id><Person_index>
+    where Vehicle_index is three digits max.
+    """
+
+    person_id = (acc_id * 1000 + veh_id) * 1000
     person_id += person_index
 
     return person_id

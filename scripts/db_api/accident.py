@@ -283,10 +283,10 @@ def update_command(acc_id, fields):
 def get_field_update(field, value):
     field_normal = "{field} = {value}"
     field_string = "{field} = '{value}'"
-    if not isinstance(value, basestring):
-        field_format = field_normal
-    else:
+    if isinstance(value, basestring):
         field_format = field_string
+    else:
+        field_format = field_normal
     return field_format.format(
         field=field,
         value=value
