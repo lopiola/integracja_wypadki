@@ -72,16 +72,24 @@ def get_acc_datetime(date, time):
     datetime['day'] = day
 
     # Time format is "HH:mm"
-    hour = int(time[:2])
-    minute = int(time[-2:])
-    datetime['hour'] = hour
-    datetime['minute'] = minute
+    try:
+        hour = int(time[:2])
+        minute = int(time[-2:])
+        datetime['hour'] = hour
+        datetime['minute'] = minute
+    except ValueError:
+        return None
 
     return datetime
 
 
-KILOMETERS_IN_MILE = 1.60934
+def get_timestamp_from_date_time(date, time):
+    datetime = get_acc_datetime(date, time)
+    if not datetime:
+        return None
+    return get_timestamp(**datetime)
 
+KILOMETERS_IN_MILE = 1.60934
 
 def mph_to_kmph(mph):
     # TODO: Should it be int?
@@ -150,7 +158,7 @@ translator_map = {
     '\xef\xbb\xbfAccident_Index': [('id', get_acc_id)],
     'Longitude': [('longitude', to_float)],
     'Latitude': [('latitude', to_float)],
-    'Date': [('timestamp', get_timestamp)],
+    'Date': [('timestamp', get_timestamp_from_date_time)],
     # TODO: check day of week codes
     'Day_of_Week': [('day_of_week', to_float)],
     'Number_of_Casualties': [('persons_count', to_int)],
@@ -173,9 +181,11 @@ def get_kwargs(accident_data, field):
     if field == '\xef\xbb\xbfAccident_Index':
         return {'acc_index': accident_data[field]}
     if field == 'Date':
-        return get_acc_datetime(accident_data['Date'], accident_data['Time'])
+        return {'date': accident_data['Date'], 'time': accident_data['Time']}
+
     return {'value': accident_data[field]}
 
+# TODO: deal with cases where no lat/long given, only osgr
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('Usage: {0} <csv_file>'.format(sys.argv[0]))
@@ -193,14 +203,22 @@ if __name__ == '__main__':
                 for field in fields:
                     kwargs = get_kwargs(accident_data, field)
                     try:
+
                         label_list = translate_field(field, translator_map, **kwargs)
                         for (label, value) in label_list:
                             accident[label] = value
                     except ValueError:
                         # We do not want to map this field
                         pass
-                accident['fatalities_count'] = 0
-                accidents.append(db_api.accident.new_from_dict(accident))
-                print(accident)
+
+                if accident['timestamp'] and 'latitude' in accident:
+                    accident['fatalities_count'] = 0
+                    accidents.append(db_api.accident.new_from_dict(accident))
+                # print(accident)
+
+        sorted_accidents = sorted(accidents, key=lambda e: dict.get(e, 'id'))
+        for i in xrange(len(sorted_accidents) - 1):
+            if sorted_accidents[i]['id'] == sorted_accidents[i + 1]['id']:
+                sorted_accidents[i + 1]['id'] += 1000000000000
 
         db_api.accident.insert(accidents)

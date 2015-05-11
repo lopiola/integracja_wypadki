@@ -40,11 +40,11 @@ def get_acc_id(year, case_index, country):
     GB ids will be in form 2200700000001234
     2 at the beginning means it is from Great Britain
     2007 means the year
-    1234 means the case ID as in original data
+    1234 means the case ID as in original data  
     """
     try:
-        acc_id = country_code[country] * 1000000000000000
-        acc_id += year * 100000000000
+        acc_id = country_code[country] * 1000000000000000000
+        acc_id += year * 100000000000000
         acc_id += case_index
     except KeyError:
         raise ValueError("Country code incorrect")

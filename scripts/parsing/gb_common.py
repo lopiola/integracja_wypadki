@@ -28,11 +28,11 @@ def get_acc_id_from_data(gb_data):
     return get_acc_id(acc_index)
 
 
-def index_letters_to_integer(index_letters):
+def index_letter_to_integer(index_letter):
     """
     Turns letters from accident index into a distinct integer.
     """
-    return ord(index_letters[0]) * 128 + ord(index_letters[1])
+    return ord(index_letter)
 
 
 def get_acc_year(acc_index):
@@ -42,13 +42,29 @@ def get_acc_year(acc_index):
     return int(acc_index[0:4])
 
 
+def get_case_index(acc_index):
+    case_index = 0
+    for char in acc_index[5:]:
+        char_value = ord(char)
+        int_value = char_value - ord('0')
+        if 10 > int_value >= 0:
+            char_value = int_value
+            multi = 10;
+        else:
+            multi = 1000
+        case_index += char_value
+        case_index *= multi
+    case_index /= 10
+    return case_index
+
+
 def get_acc_id(acc_index):
     """
     Returns global accident id based on accident index as in Great Britain original data.
     """
     year = get_acc_year(acc_index)
-    case_index = index_letters_to_integer(acc_index[-7:-5]) * 100000
-    case_index += int(acc_index[-5:])
+    case_index = get_case_index(acc_index)
+
     return get_gb_acc_id(year, case_index)
 
 
