@@ -10,50 +10,94 @@ VEH_NO - vehicle
 NUMOCCS - number of occupants
 """
 
-import csv
-import sys
-from db_api import vehicle
+from parsing import fars_common
+from parsing import common
 
 
+class FARSVehicleMapper:
+    def __init__(self, first_row, year):
+        self.first_row = first_row
+        self.year = year
+        # Check the indexes of significant fields
+        self.st_case_index = self.index_of('ST_CASE')
+        self.vehicle_no_index = self.index_of('VEH_NO')
+        self.occupants_index = self.index_of('NUMOCCS')
+
+    def valid(self, csv_row):
+        return True
+
+    def index_of(self, key):
+        index = -1
+        try:
+            index = self.first_row.index(key)
+        except ValueError:
+            pass
+        return index
+
+    def acc_id(self, csv_row):
+        return common.get_usa_acc_id(self.year, get_int(csv_row, self.st_case_index))
+
+    def id(self, csv_row):
+        return common.get_usa_veh_id(self.acc_id(csv_row), get_int(csv_row, self.vehicle_no_index))
+
+    def driver_sex(self, csv_row, driver_per_veh):
+        veh_id = self.id(csv_row)
+        if veh_id not in driver_per_veh:
+            return 'UNKNOWN'
+        else:
+            driver = driver_per_veh[veh_id]
+            if driver is None:
+                return 'UNKNOWN'
+            else:
+                return driver['sex']
+
+    def driver_age(self, csv_row, driver_per_veh):
+        veh_id = self.id(csv_row)
+        if veh_id not in driver_per_veh:
+            return -1
+        else:
+            driver = driver_per_veh[veh_id]
+            if driver is None:
+                return -1
+            else:
+                return driver['age']
+
+    def passenger_count(self, csv_row):
+        return get_int(csv_row, self.occupants_index)
+
+
+# Helper functions
 def get_int(list_row, index):
-    return int(float(list_row[index]))
+    if index < 0 or index > len(list_row) - 1:
+        return -1
+    else:
+        return int(float(list_row[index]))
 
 
 def get_float(list_row, index):
-    return float(list_row[index])
+    if index < 0 or index > len(list_row) - 1:
+        return -1.0
+    else:
+        return float(list_row[index])
 
 
-if len(sys.argv) != 3:
-    print('Usage: {0} <csv_file> <year>'.format(sys.argv[0]))
-    exit(1)
+def type_mapping():
+    return {
+        'default': 'UNKNOWN',
+        1975: {
+            1: 'DRIVER',
+            2: 'PASSENGER',
+            3: 'PEDESTRIAN'
+        },
+        1982: {
+            1: 'DRIVER',
+            2: 'PASSENGER',
+            5: 'PEDESTRIAN'
+        },
+        1994: {
+            1: 'DRIVER',
+            2: 'PASSENGER',
+            5: 'PEDESTRIAN'
+        }
+    }
 
-csv_file = open(sys.argv[1], 'rt')
-year = int(sys.argv[2])
-
-try:
-    reader = csv.reader(csv_file)
-    # Check the indexes of significant fields
-    first_row = next(reader)
-    st_case_index = first_row.index('ST_CASE')
-    veh_no_index = first_row.index('VEH_NO')
-    num_occs_index = first_row.index('NUMOCCS')
-
-    vehicles = []
-
-    for row in reader:
-        new_vehicle = vehicle.new(
-            # USA ids will be in form 1200700000001234
-            # 1 at the beggining means that it is from USA
-            # 2007 means the year
-            # 1234 means the case ID as in FARS data
-            id=10000 * get_int(row, st_case_index) + get_int(row, veh_no_index),
-            acc_id=1000000000000000 + year * 100000000000 + get_int(row, st_case_index),
-            driver_age=-1,
-            driver_sex='UNKNOWN',
-            passenger_count= get_int(row, num_occs_index)
-        )
-        vehicles.append(new_vehicle)
-    vehicle.insert(vehicles)
-
-finally:
-    csv_file.close()

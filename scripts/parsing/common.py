@@ -66,7 +66,7 @@ def get_usa_acc_id(year, case_index):
     """
     try:
         acc_id = 1000000000000
-        acc_id += year * 10000000
+        acc_id += year * 100000000
         acc_id += case_index
     except KeyError:
         raise ValueError("Country code incorrect")

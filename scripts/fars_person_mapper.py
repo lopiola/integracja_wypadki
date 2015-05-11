@@ -15,8 +15,8 @@ SEAT_POS
 REST_USE - restraint system use
 """
 
+from parsing import fars_common
 from parsing import common
-import fars_common
 
 
 class FARSPersonMapper:
@@ -52,7 +52,8 @@ class FARSPersonMapper:
         return common.get_usa_veh_id(self.acc_id(csv_row), get_int(csv_row, self.vehicle_no_index))
 
     def id(self, csv_row):
-        return common.get_usa_person_id(self.acc_id(csv_row), self.veh_id(csv_row), get_int(csv_row, self.person_no_index))
+        return common.get_usa_person_id(self.acc_id(csv_row), get_int(csv_row, self.vehicle_no_index),
+                                        get_int(csv_row, self.person_no_index))
 
     def age(self, csv_row):
         age = get_int(csv_row, self.age_index)

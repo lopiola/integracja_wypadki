@@ -18,9 +18,8 @@ MINUTE
 LATITUDE
 LONGITUD
 """
-
+from parsing import fars_common
 from parsing import common
-import fars_common
 
 
 class FARSAccidentMapper:
