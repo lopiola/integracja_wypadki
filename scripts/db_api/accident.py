@@ -169,6 +169,21 @@ def set_field(acc_id, field, value):
     """
     update(acc_id, {field: value})
 
+def execute_query(query):
+    user = common.get_user()
+    database = common.get_db_name()
+    con = connect(user=user, database=database)
+    cur = con.cursor()
+
+    cur.execute(query)
+    result = cur.fetchall()
+
+    cur.close()
+    con.commit()
+    con.close()
+
+    return result
+
 
 def create_table_command():
     return '''
