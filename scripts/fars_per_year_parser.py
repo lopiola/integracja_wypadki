@@ -115,7 +115,7 @@ try:
     mapper = FARSAccidentMapper(first_row, year)
     accidents = []
     for row in accident_reader:
-        if mapper.valid(row):
+        if mapper.valid(row, vehicles_by_acc):
             new_accident = accident.new(
                 id=mapper.id(row),
                 country='USA',

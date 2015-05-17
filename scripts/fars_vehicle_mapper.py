@@ -508,7 +508,7 @@ def traffic_control_mapping():
             4: 'TRAFFIC_SIGNAL',
             20: 'STOP_SIGN',
             21: 'YIELD_OR_NONE',
-            50: 'AUTH_PERSON',
+            50: 'AUTH_PERSON'
         }
     }
 

@@ -41,7 +41,6 @@ class FARSAccidentMapper:
         self.road_class_index = self.index_of('ROAD_FNC')
         self.surface_cond_index = self.index_of('SUR_COND')
         self.lighting_index = self.index_of('LGT_COND')
-        self.traffic_control_index = self.index_of('TRA_CONT')
         self.weather_index = self.index_of('WEATHER')
 
         self.weather1_index = -1
@@ -64,6 +63,14 @@ class FARSAccidentMapper:
         else:
             self.rel_to_junction_index = self.index_of('RELJCT2')
 
+        self.traffic_control_index = -1
+        if year < 2010:
+            self.traffic_control_index = self.index_of('TRA_CONT')
+
+        self.signal_malf_index = -1
+        if 1981 < year < 2010:
+            self.signal_malf_index = self.index_of('T_CONT_F')
+
     def index_of(self, key):
         index = -1
         try:
@@ -73,12 +80,14 @@ class FARSAccidentMapper:
             pass
         return index
 
-    def valid(self, csv_row):
-        return self.year > -1 and \
+    def valid(self, csv_row, vehicles_by_acc):
+        date_valid = self.year > -1 and \
             self.month(csv_row) > -1 and \
             self.day(csv_row) > -1 and \
             self.hour(csv_row) > -1 and \
             self.minute(csv_row) > -1
+        are_there_vehicles = self.id(csv_row) in vehicles_by_acc
+        return date_valid and are_there_vehicles
 
     def id(self, csv_row):
         return common.get_usa_acc_id(self.year, fars_common.get_int(csv_row, self.st_case_index))
@@ -128,6 +137,9 @@ class FARSAccidentMapper:
         if self.latitude_index == -1:
             return 200.0
         value = fars_common.get_float(csv_row, self.latitude_index)
+        if value == -1:
+            return 200.0
+        initial_value = value
         if self.year < 2001:
             if value >= 88888888:
                 return 200.0
@@ -137,13 +149,17 @@ class FARSAccidentMapper:
             value = degrees + minutes / 60 + seconds / 3600
 
         if not 15 < value < 75:
-            print('WARNING: latitude parsing gave {0}'.format(value))
+            print('WARNING [{0}]: latitude parsing gave {1} -> {2}'
+                  .format(self.year, initial_value, value))
         return value
 
     def longitude(self, csv_row):
         if self.longitude_index == -1:
             return 200.0
-        value = fars_common.get_float(csv_row, self.latitude_index)
+        value = fars_common.get_float(csv_row, self.longitude)
+        if value == -1:
+            return 200.0
+        initial_value = value
         if self.year < 2001:
             if value >= 888888888:
                 return 200.0
@@ -153,7 +169,8 @@ class FARSAccidentMapper:
             value = degrees + minutes / 60 + seconds / 3600
 
         if not 60 < value < 180.0:
-            print('WARNING: longitude parsing gave {0}'.format(value))
+            print('WARNING [{0}]: longitude parsing gave {1} -> {2}'
+                  .format(self.year, initial_value, value))
         return value
 
     def persons_count(self, csv_row):
@@ -232,9 +249,14 @@ class FARSAccidentMapper:
         return fars_common.value_by_mapping(value, self.year, lighting_mapping())
 
     def traffic_control(self, csv_row, traffic_controls_by_acc):
-        value = fars_common.get_int(csv_row, self.traffic_control_index)
-        value_str = fars_common.value_by_mapping(value, self.year, traffic_control_mapping())
-        if self.year > 2009:
+        value_str = 'UNKNOWN'
+        if self.year < 2010:
+            value = fars_common.get_int(csv_row, self.traffic_control_index)
+            value_str = fars_common.value_by_mapping(value, self.year, traffic_control_mapping())
+            signal_malf_value = fars_common.get_int(csv_row, self.signal_malf_index)
+            if signal_malf_value == 1 or signal_malf_value == 2:
+                value_str = 'SIGNAL_MALF'
+        else:
             hierarchy = {
                 'UNKNOWN': 0,
                 'YIELD_OR_NONE': 1,
@@ -243,7 +265,6 @@ class FARSAccidentMapper:
                 'SIGNAL_MALF': 4,
                 'AUTH_PERSON': 5
             }
-            value_str = 'UNKNOWN'
             for current_value in traffic_controls_by_acc[self.id(csv_row)]:
                 if hierarchy[current_value] > hierarchy[value_str]:
                     value_str = current_value
@@ -522,20 +543,27 @@ def traffic_control_mapping():
     return {
         'default': 'UNKNOWN',
         1975: {
-            1: 'DAYLIGHT',
-            2: 'DARK',
-            3: 'DARK_LIGHTED',
-            4: 'DAYLIGHT',
-            5: 'DAYLIGHT',
-            6: 'DAYLIGHT'
+            0: 'YIELD_OR_NONE',
+            1: 'TRAFFIC_SIGNAL',
+            2: 'TRAFFIC_SIGNAL',
+            3: 'STOP_SIGN',
+            4: 'YIELD_OR_NONE',
+            9: 'SIGNAL_MALF'
         },
-        1980: {
-            1: 'DAYLIGHT',
-            2: 'DARK',
-            3: 'DARK_LIGHTED',
-            4: 'DAYLIGHT',
-            5: 'DAYLIGHT',
-            6: 'DARK'
+        1982: {
+            0: 'YIELD_OR_NONE',
+            1: 'TRAFFIC_SIGNAL',
+            2: 'TRAFFIC_SIGNAL',
+            3: 'TRAFFIC_SIGNAL',
+            4: 'TRAFFIC_SIGNAL',
+            5: 'TRAFFIC_SIGNAL',
+            6: 'TRAFFIC_SIGNAL',
+            7: 'TRAFFIC_SIGNAL',
+            8: 'TRAFFIC_SIGNAL',
+            9: 'TRAFFIC_SIGNAL',
+            20: 'STOP_SIGN',
+            21: 'YIELD_OR_NONE',
+            50: 'AUTH_PERSON',
         }
     }
 
