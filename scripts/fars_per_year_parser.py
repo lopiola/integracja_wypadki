@@ -31,37 +31,6 @@ person_file = open(person_path, 'rt')
 vehicle_file = open(vehicle_path, 'rt')
 
 try:
-    # Parse accidents
-    accident_reader = csv.reader(accident_file)
-    first_row = next(accident_reader)
-    mapper = FARSAccidentMapper(first_row, year)
-    accidents = []
-    for row in accident_reader:
-        if mapper.valid(row):
-            new_accident = accident.new(
-                id=mapper.id(row),
-                country='USA',
-                timestamp=mapper.timestamp(row),
-                day_of_week=mapper.day_of_week(row),
-                latitude=mapper.latitude(row),
-                longitude=mapper.longitude(row),
-                persons_count=mapper.persons_count(row),
-                fatalities_count=mapper.fatalities_count(row),
-                vehicles_count=mapper.vehicles_count(row),
-                speed_limit=mapper.speed_limit(row),
-                snow=mapper.snow(row),
-                rain=mapper.rain(row),
-                wind=mapper.wind(row),
-                fog=mapper.fog(row),
-                relation_to_junction=mapper.relation_to_junction(row),
-                road_class=mapper.road_class(row),
-                surface_cond=mapper.surface_cond(row),
-                lighting=mapper.lighting(row),
-                traffic_control=mapper.traffic_control(row),
-                other_conditions=mapper.other_conditions(row)
-            )
-            accidents.append(new_accident)
-
     # Parse persons
     person_reader = csv.reader(person_file)
     first_row = next(person_reader)
@@ -93,11 +62,13 @@ try:
     first_row = next(vehicle_reader)
     mapper = FARSVehicleMapper(first_row, year)
     vehicles = []
+    speed_limits_by_acc = {}
     for row in vehicle_reader:
         if mapper.valid(row):
+            acc_id = mapper.acc_id(row)
             new_vehicle = vehicle.new(
                 id=mapper.id(row),
-                acc_id=mapper.acc_id(row),
+                acc_id=acc_id,
                 driver_sex=mapper.driver_sex(row, driver_by_veh),
                 driver_age=mapper.driver_age(row, driver_by_veh),
                 passenger_count=mapper.passenger_count(row),
@@ -114,7 +85,43 @@ try:
                 prior_location=mapper.prior_location(row),
                 driver_drinking=mapper.driver_drinking(row)
             )
+            if year > 2009:
+                if acc_id not in speed_limits_by_acc:
+                    speed_limits_by_acc[acc_id] = []
+                print("Append: {0}".format(mapper.speed_limit(row)))
+                speed_limits_by_acc[acc_id].append(mapper.speed_limit(row))
             vehicles.append(new_vehicle)
+
+    # Parse accidents
+    accident_reader = csv.reader(accident_file)
+    first_row = next(accident_reader)
+    mapper = FARSAccidentMapper(first_row, year)
+    accidents = []
+    for row in accident_reader:
+        if mapper.valid(row):
+            new_accident = accident.new(
+                id=mapper.id(row),
+                country='USA',
+                timestamp=mapper.timestamp(row),
+                day_of_week=mapper.day_of_week(row),
+                latitude=mapper.latitude(row),
+                longitude=mapper.longitude(row),
+                persons_count=mapper.persons_count(row),
+                fatalities_count=mapper.fatalities_count(row),
+                vehicles_count=mapper.vehicles_count(row),
+                speed_limit=mapper.speed_limit(row, speed_limits_by_acc),
+                snow=mapper.snow(row),
+                rain=mapper.rain(row),
+                wind=mapper.wind(row),
+                fog=mapper.fog(row),
+                relation_to_junction=mapper.relation_to_junction(row),
+                road_class=mapper.road_class(row),
+                surface_cond=mapper.surface_cond(row),
+                lighting=mapper.lighting(row),
+                traffic_control=mapper.traffic_control(row),
+                other_conditions=mapper.other_conditions(row)
+            )
+            accidents.append(new_accident)
 
     accident.insert(accidents)
     vehicle.insert(vehicles)

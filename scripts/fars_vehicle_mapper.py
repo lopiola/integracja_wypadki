@@ -33,8 +33,10 @@ class FARSVehicleMapper:
         self.vehicle_no_index = self.index_of('VEH_NO')
         self.occupants_index = self.index_of('NUMOCCS')
         self.type_index = self.index_of('BODY_TYP')
-        self.fuel_index = self.index_of('FLDCD_TR')
-        if year > 2009:
+        self.fuel_index = -1
+        if year < 2010:
+            self.fuel_index = self.index_of('FLDCD_TR')
+        else:
             self.fuel_index = self.index_of('FUELCODE')
         self.hit_n_run_index = self.index_of('HIT_RUN')
         self.skidded_index = self.index_of('PCRASH4')
@@ -43,6 +45,7 @@ class FARSVehicleMapper:
         self.impact_area = self.index_of('IMPACT1')
         self.maneuver_index = self.index_of('VEH_MAN')
         self.drinking_index = self.index_of('DR_DRINK')
+        self.speed_limit_index = self.index_of('VSPD_LIM')
 
     def valid(self, csv_row):
         return True
@@ -131,6 +134,17 @@ class FARSVehicleMapper:
     def driver_drinking(self, csv_row):
         value = get_int(csv_row, self.drinking_index)
         return fars_common.value_by_mapping(value, self.year, drinking_mapping())
+
+    # Returns speed limit in mph, for use in accident mapper
+    def speed_limit(self, csv_row):
+        value = get_int(csv_row, self.speed_limit_index)
+        if value == 0:
+            return -1
+        if value == 98:
+            return -1
+        if value == 99:
+            return -1
+        return value
 
 
 # Helper functions

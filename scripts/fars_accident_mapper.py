@@ -24,6 +24,7 @@ from parsing import common
 
 class FARSAccidentMapper:
     def __init__(self, first_row, year):
+        self.year = year
         self.first_row = first_row
         # Check the indexes of significant fields
         self.st_case_index = self.index_of('ST_CASE')
@@ -42,6 +43,12 @@ class FARSAccidentMapper:
         self.weather_index = self.index_of('WEATHER')
         self.weather1_index = self.index_of('WEATHER1')
         self.weather2_index = self.index_of('WEATHER2')
+        self.rel_to_junction_index = -1
+        if year < 2010:
+            self.rel_to_junction_index = self.index_of('REL_JUNC')
+        else:
+            self.rel_to_junction_index = self.index_of('RELJCT2')
+        self.road_class_index = self.index_of('ROAD_FCN')
 
     def index_of(self, key):
         index = -1
@@ -124,13 +131,28 @@ class FARSAccidentMapper:
     def vehicles_count(self, csv_row):
         return get_int(csv_row, self.vehicles_index)
 
-    def speed_limit(self, csv_row):
-        return -1
-        # TODO od 2009 te dane sa w VEHICLE, poza tym co robic z jednostka?
-        # if self.year(csv_row) > 2009:
-        # return -1
-        # else:
-        #     return get_int(csv_row, self.speed_limit)
+    def speed_limit(self, csv_row, speed_limits_by_acc):
+        value = get_int(csv_row, self.speed_limit_index)
+        if self.year > 2009:
+            vehicles = speed_limits_by_acc[self.id(csv_row)]
+            speed_limit = 100
+            for curr_speed_limit in vehicles:
+                if 0 < curr_speed_limit < speed_limit:
+                    speed_limit = curr_speed_limit
+            if speed_limit == 100:
+                speed_limit = -1
+            value = speed_limit
+        mph_value = value
+        if value == 99:
+            mph_value = -1
+        if self.year < 1979:
+            if value == 96:
+                mph_value = -1
+            if value == 98:
+                mph_value = -1
+        if mph_value == -1:
+            return -1
+        return common.mph_to_kmph(mph_value)
 
     def snow(self, csv_row):
         return self.check_weather(csv_row, snow_mapping())
@@ -145,12 +167,12 @@ class FARSAccidentMapper:
         return self.check_weather(csv_row, fog_mapping())
 
     def relation_to_junction(self, csv_row):
-        # TODO
-        return 'UNKNOWN'
+        value = get_int(csv_row, self.rel_to_junction_index)
+        return fars_common.value_by_mapping(value, self.year, rel_to_junction_mapping())
 
     def road_class(self, csv_row):
-        # TODO
-        return 'UNKNOWN'
+        value = get_int(csv_row, self.road_class_index)
+        return fars_common.value_by_mapping(value, self.year, road_class_mapping())
 
     def surface_cond(self, csv_row):
         # TODO
@@ -344,4 +366,69 @@ def fog_mapping():
             99: 'UNKNOWN'
         }
     }
+
+
+def rel_to_junction_mapping():
+    return {
+        'default': 'UNKNOWN',
+        1975: {
+            1: 'NON_JUNCTION',
+            2: 'INTERSECTION',
+            3: 'INTERSECTION',
+            4: 'INTERSECTION',
+            5: 'DRIVEWAY',
+            6: 'RAMP',
+            7: 'NON_JUNCTION',
+            8: 'INTERSECTION'
+        },
+        1991: {
+            0: 'NON_JUNCTION',
+            1: 'NON_JUNCTION',
+            2: 'INTERSECTION',
+            3: 'INTERSECTION',
+            4: 'DRIVEWAY',
+            5: 'RAMP',
+            6: 'NON_JUNCTION',
+            7: 'INTERSECTION',
+            8: 'DRIVEWAY',
+            10: 'INTERSECTION',
+            11: 'INTERSECTION',
+            12: 'DRIVEWAY',
+            13: 'RAMP',
+            14: 'INTERSECTION',
+            15: 'INTERSECTION',
+            19: 'INTERSECTION'
+        }
+    }
+
+
+def road_class_mapping():
+    return {
+        'default': 'UNKNOWN',
+        1981: {
+            1: 'PRINCIPAL',
+            2: 'MOTORWAY',
+            3: 'PRINCIPAL',
+            4: 'MINOR',
+            5: 'MINOR',
+            6: 'MAJOR',
+            7: 'MINOR',
+            8: 'MINOR'
+        },
+        1987: {
+            1: 'PRINCIPAL',
+            2: 'PRINCIPAL',
+            3: 'MINOR',
+            4: 'MAJOR',
+            5: 'MINOR',
+            6: 'MINOR',
+            11: 'PRINCIPAL',
+            12: 'MOTORWAY',
+            13: 'PRINCIPAL',
+            14: 'MINOR',
+            15: 'MAJOR',
+            16: 'MINOR'
+        }
+    }
+
 
