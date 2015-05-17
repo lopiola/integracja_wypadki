@@ -42,6 +42,7 @@ class FARSPersonMapper:
         try:
             index = self.first_row.index(key)
         except ValueError:
+            print('WARNING: Cannot find index of {0}'.format(key))
             pass
         return index
 

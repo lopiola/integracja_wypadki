@@ -34,7 +34,7 @@ try:
     # Parse accidents
     accident_reader = csv.reader(accident_file)
     first_row = next(accident_reader)
-    mapper = FARSAccidentMapper(first_row)
+    mapper = FARSAccidentMapper(first_row, year)
     accidents = []
     for row in accident_reader:
         if mapper.valid(row):
@@ -67,12 +67,12 @@ try:
     first_row = next(person_reader)
     mapper = FARSPersonMapper(first_row, year)
     persons = []
-    drivers_per_veh = {}
+    driver_by_veh = {}
     for row in person_reader:
         if mapper.valid(row):
             veh_id = mapper.veh_id(row)
-            if veh_id not in drivers_per_veh:
-                drivers_per_veh[veh_id] = None
+            if veh_id not in driver_by_veh:
+                driver_by_veh[veh_id] = None
             new_person = person.new(
                 id=mapper.id(row),
                 acc_id=mapper.acc_id(row),
@@ -86,7 +86,7 @@ try:
             )
             persons.append(new_person)
             if new_person['type'] == 'DRIVER':
-                drivers_per_veh[veh_id] = new_person
+                driver_by_veh[veh_id] = new_person
 
     # Parse vehicles
     vehicle_reader = csv.reader(vehicle_file)
@@ -98,9 +98,17 @@ try:
             new_vehicle = vehicle.new(
                 id=mapper.id(row),
                 acc_id=mapper.acc_id(row),
-                driver_sex=mapper.driver_sex(row, drivers_per_veh),
-                driver_age=mapper.driver_age(row, drivers_per_veh),
-                passenger_count=mapper.passenger_count(row)
+                driver_sex=mapper.driver_sex(row, driver_by_veh),
+                driver_age=mapper.driver_age(row, driver_by_veh),
+                passenger_count=mapper.passenger_count(row),
+                type=mapper.type(row),
+                fuel_type=mapper.fuel_type(row),
+                hit_and_run=mapper.hit_and_run(row),
+                skidded=mapper.skidded_index(row),
+                rollover=mapper.rollover(row),
+                jackknifing=mapper.jackknifing(row),
+                first_impact_area=mapper.first_impact_area(row),
+                maneuver=mapper.maneuver(row)
             )
             vehicles.append(new_vehicle)
 

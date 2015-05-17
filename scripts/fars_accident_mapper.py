@@ -23,7 +23,7 @@ from parsing import common
 
 
 class FARSAccidentMapper:
-    def __init__(self, first_row):
+    def __init__(self, first_row, year):
         self.first_row = first_row
         # Check the indexes of significant fields
         self.st_case_index = self.index_of('ST_CASE')
@@ -48,6 +48,7 @@ class FARSAccidentMapper:
         try:
             index = self.first_row.index(key)
         except ValueError:
+            print('WARNING: Cannot find index of {0}'.format(key))
             pass
         return index
 
@@ -181,7 +182,6 @@ class FARSAccidentMapper:
             return 'NO'
         else:
             return 'UNKNOWN'
-
 
 # Helper functions
 def get_int(list_row, index):
