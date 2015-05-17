@@ -9,6 +9,15 @@ ST_CASE - case ID
 VEH_NO - vehicle
 NUMOCCS - number of occupants
 BODY_TYP
+FLDCD_TR
+FUELCODE
+HIT_RUN
+PCRASH4
+ROLLOVER
+J_KNIFE
+IMPACT1
+VEH_MAN
+DR_DRINK
 """
 
 from parsing import fars_common
@@ -32,8 +41,8 @@ class FARSVehicleMapper:
         self.rollover_index = self.index_of('ROLLOVER')
         self.jackknifing_index = self.index_of('J_KNIFE')
         self.impact_area = self.index_of('IMPACT1')
-        self.maneuver_index = self.index_of('J_KNIFE')
-
+        self.maneuver_index = self.index_of('VEH_MAN')
+        self.drinking_index = self.index_of('DR_DRINK')
 
     def valid(self, csv_row):
         return True
@@ -82,6 +91,12 @@ class FARSVehicleMapper:
         type_int = get_int(csv_row, self.type_index)
         return fars_common.value_by_mapping(type_int, self.year, type_mapping())
 
+    def model(self, csv_row):
+        return 'UNKNOWN'
+
+    def make(self, csv_row):
+        return 'UNKNOWN'
+
     def fuel_type(self, csv_row):
         fuel_code = get_str(csv_row, self.fuel_index)
         return fars_common.value_by_mapping(fuel_code, self.year, fuel_mapping())
@@ -108,7 +123,14 @@ class FARSVehicleMapper:
 
     def maneuver(self, csv_row):
         value = get_int(csv_row, self.maneuver_index)
-        return fars_common.value_by_mapping(value, self.year, impact_mapping())
+        return fars_common.value_by_mapping(value, self.year, maneuver_mapping())
+
+    def prior_location(self, csv_row):
+        return 'UNKNOWN'
+
+    def driver_drinking(self, csv_row):
+        value = get_int(csv_row, self.drinking_index)
+        return fars_common.value_by_mapping(value, self.year, drinking_mapping())
 
 
 # Helper functions
@@ -380,5 +402,43 @@ def impact_mapping():
             81: 'RIGHT_SIDE',
             82: 'RIGHT_SIDE',
             83: 'RIGHT_SIDE'
+        }
+    }
+
+
+def maneuver_mapping():
+    return {
+        'default': 'UNKNOWN',
+        1982: {
+            1: 'STRAIGHT',
+            2: 'STOPPING',
+            3: 'STARTING',
+            4: 'HELD_UP',
+            5: 'OVERTAKING',
+            6: 'STARTING',
+            7: 'PARKED',
+            8: 'STOPPING',
+            9: 'CURVING',
+            10: 'RIGHT',
+            11: 'RIGHT',
+            12: 'RIGHT',
+            13: 'LEFT',
+            14: 'U_TURN',
+            15: 'REVERSING',
+            16: 'CHANGING_LANE',
+            17: 'CURVING'
+        },
+        2010: {
+            99: 'UNKNOWN'
+        }
+    }
+
+
+def drinking_mapping():
+    return {
+        'default': 'UNKNOWN',
+        1975: {
+            0: 'NO',
+            1: 'YES'
         }
     }

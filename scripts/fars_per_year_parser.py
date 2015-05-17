@@ -102,13 +102,17 @@ try:
                 driver_age=mapper.driver_age(row, driver_by_veh),
                 passenger_count=mapper.passenger_count(row),
                 type=mapper.type(row),
+                make=mapper.make(row),
+                model=mapper.model(row),
                 fuel_type=mapper.fuel_type(row),
                 hit_and_run=mapper.hit_and_run(row),
                 skidded=mapper.skidded_index(row),
                 rollover=mapper.rollover(row),
                 jackknifing=mapper.jackknifing(row),
                 first_impact_area=mapper.first_impact_area(row),
-                maneuver=mapper.maneuver(row)
+                maneuver=mapper.maneuver(row),
+                prior_location=mapper.prior_location(row),
+                driver_drinking=mapper.driver_drinking(row)
             )
             vehicles.append(new_vehicle)
 
