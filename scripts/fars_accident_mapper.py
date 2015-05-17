@@ -17,6 +17,7 @@ HOUR
 MINUTE
 LATITUDE
 LONGITUD
+ROAD_FCN
 """
 from parsing import fars_common
 from parsing import common
@@ -30,68 +31,72 @@ class FARSAccidentMapper:
         self.st_case_index = self.index_of('ST_CASE')
         self.persons_index = self.index_of('PERSONS')
         self.fatalities_index = self.index_of('FATALS')
-        self.vehicles_index = self.index_of('VE_TOTAL')
         self.year_index = self.index_of('YEAR')
         self.month_index = self.index_of('MONTH')
         self.day_index = self.index_of('DAY')
         self.day_of_week_index = self.index_of('DAY_WEEK')
         self.hour_index = self.index_of('HOUR')
         self.minute_index = self.index_of('MINUTE')
-        self.latitude_index = self.index_of('LATITUDE')
-        self.longitude_index = self.index_of('LONGITUD')
         self.speed_limit_index = self.index_of('SP_LIMIT')
+        self.road_class_index = self.index_of('ROAD_FNC')
+        self.surface_cond_index = self.index_of('SUR_COND')
+        self.lighting_index = self.index_of('LGT_COND')
+        self.traffic_control_index = self.index_of('TRA_CONT')
         self.weather_index = self.index_of('WEATHER')
-        self.weather1_index = self.index_of('WEATHER1')
-        self.weather2_index = self.index_of('WEATHER2')
+
+        self.weather1_index = -1
+        self.weather2_index = -1
+        if year > 2006:
+            self.weather1_index = self.index_of('WEATHER1')
+            self.weather2_index = self.index_of('WEATHER2')
+
+        self.latitude_index = -1
+        if year > 1998:
+            self.latitude_index = self.index_of('LATITUDE')
+
+        self.longitude_index = -1
+        if year > 1998:
+            self.longitude_index = self.index_of('LONGITUD')
+
         self.rel_to_junction_index = -1
         if year < 2010:
             self.rel_to_junction_index = self.index_of('REL_JUNC')
         else:
             self.rel_to_junction_index = self.index_of('RELJCT2')
-        self.road_class_index = self.index_of('ROAD_FCN')
-        self.surface_cond_index = self.index_of('SUR_COND')
-        self.lighting_index = self.index_of('LGT_COND')
-        self.traffic_control_index = self.index_of('TRA_CONT')
 
     def index_of(self, key):
         index = -1
         try:
             index = self.first_row.index(key)
         except ValueError:
-            print('WARNING: Cannot find index of {0}'.format(key))
+            print('WARNING [ACC]: Cannot find index of {0}'.format(key))
             pass
         return index
 
     def valid(self, csv_row):
-        return self.year(csv_row) > -1 and \
-               self.month(csv_row) > -1 and \
-               self.day(csv_row) > -1 and \
-               self.hour(csv_row) > -1 and \
-               self.minute(csv_row) > -1
+        return self.year > -1 and \
+            self.month(csv_row) > -1 and \
+            self.day(csv_row) > -1 and \
+            self.hour(csv_row) > -1 and \
+            self.minute(csv_row) > -1
 
     def id(self, csv_row):
-        return common.get_usa_acc_id(self.year(csv_row), get_int(csv_row, self.st_case_index))
-
-    def year(self, csv_row):
-        year = get_int(csv_row, self.year_index)
-        if year < 100:
-            year += 1900
-        return year
+        return common.get_usa_acc_id(self.year, fars_common.get_int(csv_row, self.st_case_index))
 
     def month(self, csv_row):
-        month = get_int(csv_row, self.month_index)
+        month = fars_common.get_int(csv_row, self.month_index)
         if month > 12:
             month = -1
         return month
 
     def day(self, csv_row):
-        day = get_int(csv_row, self.day_index)
+        day = fars_common.get_int(csv_row, self.day_index)
         if day > 31:
             day = -1
         return day
 
     def hour(self, csv_row):
-        hour = get_int(csv_row, self.hour_index)
+        hour = fars_common.get_int(csv_row, self.hour_index)
         if hour == 24:
             hour = 0
         if hour > 24:
@@ -99,20 +104,20 @@ class FARSAccidentMapper:
         return hour
 
     def minute(self, csv_row):
-        minute = get_int(csv_row, self.minute_index)
+        minute = fars_common.get_int(csv_row, self.minute_index)
         if minute > 59:
             minute = -1
         return minute
 
     def day_of_week(self, csv_row):
-        day_of_week_int = get_int(csv_row, self.day_of_week_index)
+        day_of_week_int = fars_common.get_int(csv_row, self.day_of_week_index)
         if day_of_week_int > 7:
             return -1
         else:
             return day_of_week_int
 
     def timestamp(self, csv_row):
-        year = self.year(csv_row)
+        year = self.year
         month = self.month(csv_row)
         day = self.day(csv_row)
         hour = self.hour(csv_row)
@@ -120,22 +125,48 @@ class FARSAccidentMapper:
         return common.get_timestamp(year, month, day, hour, minute)
 
     def latitude(self, csv_row):
-        return get_float(csv_row, self.latitude_index)
+        if self.latitude_index == -1:
+            return 200.0
+        value = fars_common.get_float(csv_row, self.latitude_index)
+        if self.year < 2001:
+            if value >= 88888888:
+                return 200.0
+            degrees = value // 1000000
+            minutes = (value % 1000000) / 10000
+            seconds = (value % 10000) / 100
+            value = degrees + minutes / 60 + seconds / 3600
+
+        if not 15 < value < 75:
+            print('WARNING: latitude parsing gave {0}'.format(value))
+        return value
 
     def longitude(self, csv_row):
-        return get_float(csv_row, self.longitude_index)
+        if self.longitude_index == -1:
+            return 200.0
+        value = fars_common.get_float(csv_row, self.latitude_index)
+        if self.year < 2001:
+            if value >= 888888888:
+                return 200.0
+            degrees = value // 1000000
+            minutes = (value % 1000000) / 10000
+            seconds = (value % 10000) / 100
+            value = degrees + minutes / 60 + seconds / 3600
+
+        if not 60 < value < 180.0:
+            print('WARNING: longitude parsing gave {0}'.format(value))
+        return value
 
     def persons_count(self, csv_row):
-        return get_int(csv_row, self.persons_index)
+        return fars_common.get_int(csv_row, self.persons_index)
 
     def fatalities_count(self, csv_row):
-        return get_int(csv_row, self.fatalities_index)
+        return fars_common.get_int(csv_row, self.fatalities_index)
 
-    def vehicles_count(self, csv_row):
-        return get_int(csv_row, self.vehicles_index)
+    def vehicles_count(self, csv_row, vehicles_by_acc):
+        return len(vehicles_by_acc[self.id(csv_row)])
 
     def speed_limit(self, csv_row, speed_limits_by_acc):
-        value = get_int(csv_row, self.speed_limit_index)
+        value = fars_common.get_int(csv_row, self.speed_limit_index)
         if self.year > 2009:
             vehicles = speed_limits_by_acc[self.id(csv_row)]
             speed_limit = 100
@@ -170,15 +201,15 @@ class FARSAccidentMapper:
         return self.check_weather(csv_row, fog_mapping())
 
     def relation_to_junction(self, csv_row):
-        value = get_int(csv_row, self.rel_to_junction_index)
+        value = fars_common.get_int(csv_row, self.rel_to_junction_index)
         return fars_common.value_by_mapping(value, self.year, rel_to_junction_mapping())
 
     def road_class(self, csv_row):
-        value = get_int(csv_row, self.road_class_index)
+        value = fars_common.get_int(csv_row, self.road_class_index)
         return fars_common.value_by_mapping(value, self.year, road_class_mapping())
 
     def surface_cond(self, csv_row, surface_conds_by_acc):
-        value = get_int(csv_row, self.surface_cond_index)
+        value = fars_common.get_int(csv_row, self.surface_cond_index)
         value_str = fars_common.value_by_mapping(value, self.year, surface_cond_mapping())
         if self.year > 2009:
             hierarchy = {
@@ -197,11 +228,11 @@ class FARSAccidentMapper:
         return value_str
 
     def lighting(self, csv_row):
-        value = get_int(csv_row, self.lighting_index)
+        value = fars_common.get_int(csv_row, self.lighting_index)
         return fars_common.value_by_mapping(value, self.year, lighting_mapping())
 
     def traffic_control(self, csv_row, traffic_controls_by_acc):
-        value = get_int(csv_row, self.traffic_control_index)
+        value = fars_common.get_int(csv_row, self.traffic_control_index)
         value_str = fars_common.value_by_mapping(value, self.year, traffic_control_mapping())
         if self.year > 2009:
             hierarchy = {
@@ -222,10 +253,10 @@ class FARSAccidentMapper:
         return 'UNKNOWN'
 
     def check_weather(self, csv_row, weather_mapping):
-        year = self.year(csv_row)
-        weather_value_int = get_int(csv_row, self.weather_index)
-        weather1_value_int = get_int(csv_row, self.weather1_index)
-        weather2_value_int = get_int(csv_row, self.weather2_index)
+        year = self.year
+        weather_value_int = fars_common.get_int(csv_row, self.weather_index)
+        weather1_value_int = fars_common.get_int(csv_row, self.weather1_index)
+        weather2_value_int = fars_common.get_int(csv_row, self.weather2_index)
         weather_value = fars_common.value_by_mapping(weather_value_int, year, weather_mapping)
         weather1_value = fars_common.value_by_mapping(weather1_value_int, year, weather_mapping)
         weather2_value = fars_common.value_by_mapping(weather2_value_int, year, weather_mapping)
@@ -235,21 +266,6 @@ class FARSAccidentMapper:
             return 'NO'
         else:
             return 'UNKNOWN'
-
-
-# Helper functions
-def get_int(list_row, index):
-    if index < 0 or index > len(list_row) - 1:
-        return -1
-    else:
-        return int(float(list_row[index]))
-
-
-def get_float(list_row, index):
-    if index < 0 or index > len(list_row) - 1:
-        return -1.0
-    else:
-        return float(list_row[index])
 
 
 def snow_mapping():

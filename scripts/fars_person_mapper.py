@@ -12,7 +12,7 @@ AGE
 PER_TYP
 INJ_SEV
 SEAT_POS
-REST_USE - restraint system use
+REST_USE - restraint system use, 1991+
 """
 
 from parsing import fars_common
@@ -32,7 +32,10 @@ class FARSPersonMapper:
         self.type_index = self.index_of('PER_TYP')
         self.injury_index = self.index_of('INJ_SEV')
         self.seated_pos_index = self.index_of('SEAT_POS')
-        self.seatbelt_index = self.index_of('REST_USE')
+
+        self.seat_belt_index = -1
+        if year > 1990:
+            self.seat_belt_index = self.index_of('REST_USE')
 
     def valid(self, csv_row):
         return True
@@ -42,22 +45,22 @@ class FARSPersonMapper:
         try:
             index = self.first_row.index(key)
         except ValueError:
-            print('WARNING: Cannot find index of {0}'.format(key))
+            print('WARNING [PER]: Cannot find index of {0}'.format(key))
             pass
         return index
 
     def acc_id(self, csv_row):
-        return common.get_usa_acc_id(self.year, get_int(csv_row, self.st_case_index))
+        return common.get_usa_acc_id(self.year, fars_common.get_int(csv_row, self.st_case_index))
 
     def veh_id(self, csv_row):
-        return common.get_usa_veh_id(self.acc_id(csv_row), get_int(csv_row, self.vehicle_no_index))
+        return common.get_usa_veh_id(self.acc_id(csv_row), fars_common.get_int(csv_row, self.vehicle_no_index))
 
     def id(self, csv_row):
-        return common.get_usa_person_id(self.acc_id(csv_row), get_int(csv_row, self.vehicle_no_index),
-                                        get_int(csv_row, self.person_no_index))
+        return common.get_usa_person_id(self.acc_id(csv_row), fars_common.get_int(csv_row, self.vehicle_no_index),
+                                        fars_common.get_int(csv_row, self.person_no_index))
 
     def age(self, csv_row):
-        age = get_int(csv_row, self.age_index)
+        age = fars_common.get_int(csv_row, self.age_index)
         if self.year < 2009:
             if age == 99:
                 age = -1
@@ -67,7 +70,7 @@ class FARSPersonMapper:
         return age
 
     def sex(self, csv_row):
-        sex = get_int(csv_row, self.sex_index)
+        sex = fars_common.get_int(csv_row, self.sex_index)
         if sex == 1:
             return 'MALE'
         elif sex == 2:
@@ -76,41 +79,26 @@ class FARSPersonMapper:
             return 'UNKNOWN'
 
     def type(self, csv_row):
-        type_int = get_int(csv_row, self.type_index)
+        type_int = fars_common.get_int(csv_row, self.type_index)
         return fars_common.value_by_mapping(type_int, self.year, type_mapping())
 
     def injury_level(self, csv_row):
-        injury_int = get_int(csv_row, self.injury_index)
+        injury_int = fars_common.get_int(csv_row, self.injury_index)
         return fars_common.value_by_mapping(injury_int, self.year, injury_mapping())
 
     def seated_pos(self, csv_row):
-        seated_pos_int = get_int(csv_row, self.seated_pos_index)
+        seated_pos_int = fars_common.get_int(csv_row, self.seated_pos_index)
         return fars_common.value_by_mapping(seated_pos_int, self.year, seated_pos_mapping())
 
     def seatbelt(self, csv_row):
-        seatbelt_int = get_int(csv_row, self.seatbelt_index)
-        seatbelt_value = fars_common.value_by_mapping(seatbelt_int, self.year, seatbelt_mapping())
+        seatbelt_int = fars_common.get_int(csv_row, self.seat_belt_index)
+        seatbelt_value = fars_common.value_by_mapping(seatbelt_int, self.year, seat_belt_mapping())
         if seatbelt_value == 'NOT_WORN_OR_NOT_APPLICABLE':
             if self.type(csv_row) == 'DRIVER' or self.type(csv_row) == 'PASSENGER':
                 seatbelt_value = 'NOT_WORN'
             else:
                 seatbelt_value = 'NOT_APPLICABLE'
         return seatbelt_value
-
-
-# Helper functions
-def get_int(list_row, index):
-    if index < 0 or index > len(list_row) - 1:
-        return -1
-    else:
-        return int(float(list_row[index]))
-
-
-def get_float(list_row, index):
-    if index < 0 or index > len(list_row) - 1:
-        return -1.0
-    else:
-        return float(list_row[index])
 
 
 def type_mapping():
@@ -199,7 +187,7 @@ def seated_pos_mapping():
     }
 
 
-def seatbelt_mapping():
+def seat_belt_mapping():
     return {
         'default': 'UNKNOWN',
         1991: {

@@ -12,12 +12,16 @@ BODY_TYP
 FLDCD_TR
 FUELCODE
 HIT_RUN
-PCRASH4
+PCRASH4 - 2010+
 ROLLOVER
 J_KNIFE
 IMPACT1
-VEH_MAN
+VEH_MAN - 1982+, 2009-
 DR_DRINK
+VSPD_LIM - 2009+
+VSURCOND - 2010+
+VTRAFCON - 2010+
+VTCONT_F - 2010+
 """
 
 from parsing import fars_common
@@ -31,24 +35,48 @@ class FARSVehicleMapper:
         # Check the indexes of significant fields
         self.st_case_index = self.index_of('ST_CASE')
         self.vehicle_no_index = self.index_of('VEH_NO')
-        self.occupants_index = self.index_of('NUMOCCS')
         self.type_index = self.index_of('BODY_TYP')
+        self.hit_n_run_index = self.index_of('HIT_RUN')
+        self.rollover_index = self.index_of('ROLLOVER')
+        self.jackknifing_index = self.index_of('J_KNIFE')
+        self.impact_area = self.index_of('IMPACT1')
+        self.drinking_index = self.index_of('DR_DRINK')
+
+        self.occupants_index = -1
+        if year < 2009:
+            self.occupants_index = self.index_of('OCUPANTS')
+        else:
+            self.occupants_index = self.index_of('NUMOCCS')
+
         self.fuel_index = -1
         if year < 2010:
             self.fuel_index = self.index_of('FLDCD_TR')
         else:
             self.fuel_index = self.index_of('FUELCODE')
-        self.hit_n_run_index = self.index_of('HIT_RUN')
-        self.skidded_index = self.index_of('PCRASH4')
-        self.rollover_index = self.index_of('ROLLOVER')
-        self.jackknifing_index = self.index_of('J_KNIFE')
-        self.impact_area = self.index_of('IMPACT1')
-        self.maneuver_index = self.index_of('VEH_MAN')
-        self.drinking_index = self.index_of('DR_DRINK')
-        self.speed_limit_index = self.index_of('VSPD_LIM')
-        self.surface_cond_index = self.index_of('VSURCOND')
-        self.traffic_control_index = self.index_of('VTRAFCON')
-        self.signal_malf_index = self.index_of('VTCONT_F')
+
+        self.skidded_index = -1
+        if year > 2009:
+            self.skidded_index = self.index_of('PCRASH4')
+
+        self.maneuver_index = -1
+        if 1981 < year < 2010:
+            self.maneuver_index = self.index_of('VEH_MAN')
+
+        self.speed_limit_index = -1
+        if year > 2008:
+            self.speed_limit_index = self.index_of('VSPD_LIM')
+
+        self.surface_cond_index = -1
+        if year > 2009:
+            self.surface_cond_index = self.index_of('VSURCOND')
+
+        self.surface_cond_index = -1
+        if year > 2009:
+            self.traffic_control_index = self.index_of('VTRAFCON')
+
+        self.signal_malf_index = -1
+        if year > 2009:
+            self.signal_malf_index = self.index_of('VTCONT_F')
 
     def valid(self, csv_row):
         return True
@@ -58,15 +86,15 @@ class FARSVehicleMapper:
         try:
             index = self.first_row.index(key)
         except ValueError:
-            print('WARNING: Cannot find index of {0}'.format(key))
+            print('WARNING [VEH]: Cannot find index of {0}'.format(key))
             pass
         return index
 
     def acc_id(self, csv_row):
-        return common.get_usa_acc_id(self.year, get_int(csv_row, self.st_case_index))
+        return common.get_usa_acc_id(self.year, fars_common.get_int(csv_row, self.st_case_index))
 
     def id(self, csv_row):
-        return common.get_usa_veh_id(self.acc_id(csv_row), get_int(csv_row, self.vehicle_no_index))
+        return common.get_usa_veh_id(self.acc_id(csv_row), fars_common.get_int(csv_row, self.vehicle_no_index))
 
     def driver_sex(self, csv_row, driver_by_veh):
         veh_id = self.id(csv_row)
@@ -91,10 +119,10 @@ class FARSVehicleMapper:
                 return driver['age']
 
     def passenger_count(self, csv_row):
-        return get_int(csv_row, self.occupants_index)
+        return fars_common.get_int(csv_row, self.occupants_index)
 
     def type(self, csv_row):
-        type_int = get_int(csv_row, self.type_index)
+        type_int = fars_common.get_int(csv_row, self.type_index)
         return fars_common.value_by_mapping(type_int, self.year, type_mapping())
 
     def model(self, csv_row):
@@ -104,43 +132,43 @@ class FARSVehicleMapper:
         return 'UNKNOWN'
 
     def fuel_type(self, csv_row):
-        fuel_code = get_str(csv_row, self.fuel_index)
+        fuel_code = fars_common.get_str(csv_row, self.fuel_index)
         return fars_common.value_by_mapping(fuel_code, self.year, fuel_mapping())
 
     def hit_and_run(self, csv_row):
-        value = get_int(csv_row, self.hit_n_run_index)
+        value = fars_common.get_int(csv_row, self.hit_n_run_index)
         return fars_common.value_by_mapping(value, self.year, hit_n_run_mapping())
 
     def skidded(self, csv_row):
-        value = get_int(csv_row, self.skidded_index)
+        value = fars_common.get_int(csv_row, self.skidded_index)
         return fars_common.value_by_mapping(value, self.year, skidded_mapping())
 
     def rollover(self, csv_row):
-        value = get_int(csv_row, self.rollover_index)
+        value = fars_common.get_int(csv_row, self.rollover_index)
         return fars_common.value_by_mapping(value, self.year, rollover_mapping())
 
     def jackknifing(self, csv_row):
-        value = get_int(csv_row, self.jackknifing_index)
+        value = fars_common.get_int(csv_row, self.jackknifing_index)
         return fars_common.value_by_mapping(value, self.year, jack_knifing_mapping())
 
     def first_impact_area(self, csv_row):
-        value = get_int(csv_row, self.impact_area)
+        value = fars_common.get_int(csv_row, self.impact_area)
         return fars_common.value_by_mapping(value, self.year, impact_mapping())
 
     def maneuver(self, csv_row):
-        value = get_int(csv_row, self.maneuver_index)
+        value = fars_common.get_int(csv_row, self.maneuver_index)
         return fars_common.value_by_mapping(value, self.year, maneuver_mapping())
 
     def prior_location(self, csv_row):
         return 'UNKNOWN'
 
     def driver_drinking(self, csv_row):
-        value = get_int(csv_row, self.drinking_index)
+        value = fars_common.get_int(csv_row, self.drinking_index)
         return fars_common.value_by_mapping(value, self.year, drinking_mapping())
 
     # Returns speed limit in mph, for use in accident mapper
     def speed_limit(self, csv_row):
-        value = get_int(csv_row, self.speed_limit_index)
+        value = fars_common.get_int(csv_row, self.speed_limit_index)
         if value == 0:
             return -1
         if value == 98:
@@ -150,38 +178,16 @@ class FARSVehicleMapper:
         return value
 
     def surface_cond(self, csv_row):
-        value = get_int(csv_row, self.surface_cond_index)
+        value = fars_common.get_int(csv_row, self.surface_cond_index)
         return fars_common.value_by_mapping(value, self.year, surface_cond_mapping())
 
     def traffic_control(self, csv_row):
-        value = get_int(csv_row, self.traffic_control_index)
+        value = fars_common.get_int(csv_row, self.traffic_control_index)
         mapped_value = fars_common.value_by_mapping(value, self.year, traffic_control_mapping())
-        signal_malf_value = get_int(csv_row, self.signal_malf_index)
+        signal_malf_value = fars_common.get_int(csv_row, self.signal_malf_index)
         if signal_malf_value == 1 or signal_malf_value == 2:
             mapped_value = 'SIGNAL_MALF'
         return mapped_value
-
-
-# Helper functions
-def get_int(list_row, index):
-    if index < 0 or index > len(list_row) - 1:
-        return -1
-    else:
-        return int(float(list_row[index]))
-
-
-def get_float(list_row, index):
-    if index < 0 or index > len(list_row) - 1:
-        return -1.0
-    else:
-        return float(list_row[index])
-
-
-def get_str(list_row, index):
-    if index < 0 or index > len(list_row) - 1:
-        return 'UNKNOWN'
-    else:
-        return list_row[index]
 
 
 def type_mapping():

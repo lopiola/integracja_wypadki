@@ -65,11 +65,16 @@ try:
     speed_limits_by_acc = {}
     surface_conds_by_acc = {}
     traffic_controls_by_acc = {}
+    vehicles_by_acc = {}
     for row in vehicle_reader:
         if mapper.valid(row):
+            veh_id = mapper.id(row)
             acc_id = mapper.acc_id(row)
+            if acc_id not in vehicles_by_acc:
+                vehicles_by_acc[acc_id] = []
+            vehicles_by_acc[acc_id].append(veh_id)
             new_vehicle = vehicle.new(
-                id=mapper.id(row),
+                id=veh_id,
                 acc_id=acc_id,
                 driver_sex=mapper.driver_sex(row, driver_by_veh),
                 driver_age=mapper.driver_age(row, driver_by_veh),
@@ -79,7 +84,7 @@ try:
                 model=mapper.model(row),
                 fuel_type=mapper.fuel_type(row),
                 hit_and_run=mapper.hit_and_run(row),
-                skidded=mapper.skidded_index(row),
+                skidded=mapper.skidded(row),
                 rollover=mapper.rollover(row),
                 jackknifing=mapper.jackknifing(row),
                 first_impact_area=mapper.first_impact_area(row),
@@ -120,7 +125,7 @@ try:
                 longitude=mapper.longitude(row),
                 persons_count=mapper.persons_count(row),
                 fatalities_count=mapper.fatalities_count(row),
-                vehicles_count=mapper.vehicles_count(row),
+                vehicles_count=mapper.vehicles_count(row, vehicles_by_acc),
                 speed_limit=mapper.speed_limit(row, speed_limits_by_acc),
                 snow=mapper.snow(row),
                 rain=mapper.rain(row),
