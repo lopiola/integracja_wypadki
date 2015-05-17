@@ -63,6 +63,8 @@ try:
     mapper = FARSVehicleMapper(first_row, year)
     vehicles = []
     speed_limits_by_acc = {}
+    surface_conds_by_acc = {}
+    traffic_controls_by_acc = {}
     for row in vehicle_reader:
         if mapper.valid(row):
             acc_id = mapper.acc_id(row)
@@ -88,8 +90,18 @@ try:
             if year > 2009:
                 if acc_id not in speed_limits_by_acc:
                     speed_limits_by_acc[acc_id] = []
-                print("Append: {0}".format(mapper.speed_limit(row)))
+                print("Append speed_lim: {0}".format(mapper.speed_limit(row)))
                 speed_limits_by_acc[acc_id].append(mapper.speed_limit(row))
+            if year > 2010:
+                if acc_id not in surface_conds_by_acc:
+                    surface_conds_by_acc[acc_id] = []
+                print("Append surface_cond: {0}".format(mapper.surface_cond(row)))
+                surface_conds_by_acc[acc_id].append(mapper.surface_cond(row))
+            if year > 2010:
+                if acc_id not in traffic_controls_by_acc:
+                    traffic_controls_by_acc[acc_id] = []
+                print("Append traffic_control: {0}".format(mapper.traffic_control(row)))
+                traffic_controls_by_acc[acc_id].append(mapper.traffic_control(row))
             vehicles.append(new_vehicle)
 
     # Parse accidents
@@ -116,9 +128,9 @@ try:
                 fog=mapper.fog(row),
                 relation_to_junction=mapper.relation_to_junction(row),
                 road_class=mapper.road_class(row),
-                surface_cond=mapper.surface_cond(row),
+                surface_cond=mapper.surface_cond(row, surface_conds_by_acc),
                 lighting=mapper.lighting(row),
-                traffic_control=mapper.traffic_control(row),
+                traffic_control=mapper.traffic_control(row, traffic_controls_by_acc),
                 other_conditions=mapper.other_conditions(row)
             )
             accidents.append(new_accident)

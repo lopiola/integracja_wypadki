@@ -46,6 +46,9 @@ class FARSVehicleMapper:
         self.maneuver_index = self.index_of('VEH_MAN')
         self.drinking_index = self.index_of('DR_DRINK')
         self.speed_limit_index = self.index_of('VSPD_LIM')
+        self.surface_cond_index = self.index_of('VSURCOND')
+        self.traffic_control_index = self.index_of('VTRAFCON')
+        self.signal_malf_index = self.index_of('VTCONT_F')
 
     def valid(self, csv_row):
         return True
@@ -145,6 +148,18 @@ class FARSVehicleMapper:
         if value == 99:
             return -1
         return value
+
+    def surface_cond(self, csv_row):
+        value = get_int(csv_row, self.surface_cond_index)
+        return fars_common.value_by_mapping(value, self.year, surface_cond_mapping())
+
+    def traffic_control(self, csv_row):
+        value = get_int(csv_row, self.traffic_control_index)
+        mapped_value = fars_common.value_by_mapping(value, self.year, traffic_control_mapping())
+        signal_malf_value = get_int(csv_row, self.signal_malf_index)
+        if signal_malf_value == 1 or signal_malf_value == 2:
+            mapped_value = 'SIGNAL_MALF'
+        return mapped_value
 
 
 # Helper functions
@@ -456,3 +471,40 @@ def drinking_mapping():
             1: 'YES'
         }
     }
+
+
+def surface_cond_mapping():
+    return {
+        'default': 'UNKNOWN',
+        2010: {
+            1: 'DRY',
+            2: 'WET',
+            3: 'SNOW',
+            4: 'ICE',
+            5: 'OTHER',
+            6: 'FLOOD',
+            7: 'OTHER',
+            8: 'OTHER',
+            10: 'SNOW',
+            11: 'OTHER'
+        }
+    }
+
+
+def traffic_control_mapping():
+    return {
+        'default': 'UNKNOWN',
+        2010: {
+            0: 'YIELD_OR_NONE',
+            1: 'TRAFFIC_SIGNAL',
+            2: 'TRAFFIC_SIGNAL',
+            3: 'TRAFFIC_SIGNAL',
+            4: 'TRAFFIC_SIGNAL',
+            20: 'STOP_SIGN',
+            21: 'YIELD_OR_NONE',
+            50: 'AUTH_PERSON',
+        }
+    }
+
+
+

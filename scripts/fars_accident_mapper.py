@@ -49,6 +49,9 @@ class FARSAccidentMapper:
         else:
             self.rel_to_junction_index = self.index_of('RELJCT2')
         self.road_class_index = self.index_of('ROAD_FCN')
+        self.surface_cond_index = self.index_of('SUR_COND')
+        self.lighting_index = self.index_of('LGT_COND')
+        self.traffic_control_index = self.index_of('TRA_CONT')
 
     def index_of(self, key):
         index = -1
@@ -174,20 +177,48 @@ class FARSAccidentMapper:
         value = get_int(csv_row, self.road_class_index)
         return fars_common.value_by_mapping(value, self.year, road_class_mapping())
 
-    def surface_cond(self, csv_row):
-        # TODO
-        return 'UNKNOWN'
+    def surface_cond(self, csv_row, surface_conds_by_acc):
+        value = get_int(csv_row, self.surface_cond_index)
+        value_str = fars_common.value_by_mapping(value, self.year, surface_cond_mapping())
+        if self.year > 2009:
+            hierarchy = {
+                'UNKNOWN': 0,
+                'DRY': 1,
+                'WET': 2,
+                'OTHER': 3,
+                'FLOOD': 4,
+                'SNOW': 5,
+                'ICE': 6
+            }
+            value_str = 'UNKNOWN'
+            for current_value in surface_conds_by_acc[self.id(csv_row)]:
+                if hierarchy[current_value] > hierarchy[value_str]:
+                    value_str = current_value
+        return value_str
 
     def lighting(self, csv_row):
-        # TODO
-        return 'UNKNOWN'
+        value = get_int(csv_row, self.lighting_index)
+        return fars_common.value_by_mapping(value, self.year, lighting_mapping())
 
-    def traffic_control(self, csv_row):
-        # TODO
-        return 'UNKNOWN'
+    def traffic_control(self, csv_row, traffic_controls_by_acc):
+        value = get_int(csv_row, self.traffic_control_index)
+        value_str = fars_common.value_by_mapping(value, self.year, traffic_control_mapping())
+        if self.year > 2009:
+            hierarchy = {
+                'UNKNOWN': 0,
+                'YIELD_OR_NONE': 1,
+                'TRAFFIC_SIGNAL': 2,
+                'STOP_SIGN': 3,
+                'SIGNAL_MALF': 4,
+                'AUTH_PERSON': 5
+            }
+            value_str = 'UNKNOWN'
+            for current_value in traffic_controls_by_acc[self.id(csv_row)]:
+                if hierarchy[current_value] > hierarchy[value_str]:
+                    value_str = current_value
+        return value_str
 
     def other_conditions(self, csv_row):
-        # TODO
         return 'UNKNOWN'
 
     def check_weather(self, csv_row, weather_mapping):
@@ -204,6 +235,7 @@ class FARSAccidentMapper:
             return 'NO'
         else:
             return 'UNKNOWN'
+
 
 # Helper functions
 def get_int(list_row, index):
@@ -428,6 +460,66 @@ def road_class_mapping():
             14: 'MINOR',
             15: 'MAJOR',
             16: 'MINOR'
+        }
+    }
+
+
+def surface_cond_mapping():
+    return {
+        'default': 'UNKNOWN',
+        2010: {
+            1: 'DRY',
+            2: 'WET',
+            3: 'SNOW',
+            4: 'ICE',
+            5: 'OTHER',
+            6: 'FLOOD',
+            7: 'OTHER',
+            8: 'OTHER'
+        }
+    }
+
+
+def lighting_mapping():
+    return {
+        'default': 'UNKNOWN',
+        1975: {
+            1: 'DAYLIGHT',
+            2: 'DARK',
+            3: 'DARK_LIGHTED',
+            4: 'DAYLIGHT',
+            5: 'DAYLIGHT',
+            6: 'DAYLIGHT'
+        },
+        1980: {
+            1: 'DAYLIGHT',
+            2: 'DARK',
+            3: 'DARK_LIGHTED',
+            4: 'DAYLIGHT',
+            5: 'DAYLIGHT',
+            6: 'DARK'
+        }
+    }
+
+
+def traffic_control_mapping():
+    return {
+        'default': 'UNKNOWN',
+        1975: {
+            1: 'DAYLIGHT',
+            2: 'DARK',
+            3: 'DARK_LIGHTED',
+            4: 'DAYLIGHT',
+            5: 'DAYLIGHT',
+            6: 'DAYLIGHT'
+        },
+        1980: {
+            1: 'DAYLIGHT',
+            2: 'DARK',
+            3: 'DARK_LIGHTED',
+            4: 'DAYLIGHT',
+            5: 'DAYLIGHT',
+            6: 'DARK'
         }
     }
 
