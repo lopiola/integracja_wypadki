@@ -76,7 +76,8 @@ class FARSAccidentMapper:
         try:
             index = self.first_row.index(key)
         except ValueError:
-            print('WARNING [ACC]: Cannot find index of {0}'.format(key))
+            print('WARNING [ACC {0}]: Cannot find index of {1}'
+                  .format(self.year, key))
             pass
         return index
 
@@ -137,7 +138,7 @@ class FARSAccidentMapper:
         if self.latitude_index == -1:
             return 200.0
         value = fars_common.get_float(csv_row, self.latitude_index)
-        if value == -1:
+        if value == -1.0 or value == 0.0:
             return 200.0
         initial_value = value
         if self.year < 2001:
@@ -157,7 +158,7 @@ class FARSAccidentMapper:
         if self.longitude_index == -1:
             return 200.0
         value = fars_common.get_float(csv_row, self.longitude)
-        if value == -1:
+        if value == -1.0 or value == 0.0:
             return 200.0
         initial_value = value
         if self.year < 2001:
