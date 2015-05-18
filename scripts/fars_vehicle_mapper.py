@@ -86,7 +86,8 @@ class FARSVehicleMapper:
         try:
             index = self.first_row.index(key)
         except ValueError:
-            print('WARNING [VEH]: Cannot find index of {0}'.format(key))
+            print('WARNING [VEH {0}]: Cannot find index of {1}'
+                  .format(self.year, key))
             pass
         return index
 
