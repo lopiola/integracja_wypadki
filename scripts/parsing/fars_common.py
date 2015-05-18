@@ -24,3 +24,23 @@ def value_by_mapping(value, year, mapping):
         return branch[value]
     else:
         return default
+
+
+def get_int(list_row, index):
+    return int(get_float(list_row, index))
+
+
+def get_float(list_row, index):
+    if index < 0 or index > len(list_row) - 1:
+        return -1.0
+    if list_row[index] == '.':
+        return -1.0
+    else:
+        return float(list_row[index])
+
+
+def get_str(list_row, index):
+    if index < 0 or index > len(list_row) - 1:
+        return 'UNKNOWN'
+    else:
+        return list_row[index]

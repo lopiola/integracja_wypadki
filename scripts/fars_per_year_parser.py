@@ -31,48 +31,17 @@ person_file = open(person_path, 'rt')
 vehicle_file = open(vehicle_path, 'rt')
 
 try:
-    # Parse accidents
-    accident_reader = csv.reader(accident_file)
-    first_row = next(accident_reader)
-    mapper = FARSAccidentMapper(first_row)
-    accidents = []
-    for row in accident_reader:
-        if mapper.valid(row):
-            new_accident = accident.new(
-                id=mapper.id(row),
-                country='USA',
-                timestamp=mapper.timestamp(row),
-                day_of_week=mapper.day_of_week(row),
-                latitude=mapper.latitude(row),
-                longitude=mapper.longitude(row),
-                persons_count=mapper.persons_count(row),
-                fatalities_count=mapper.fatalities_count(row),
-                vehicles_count=mapper.vehicles_count(row),
-                speed_limit=mapper.speed_limit(row),
-                snow=mapper.snow(row),
-                rain=mapper.rain(row),
-                wind=mapper.wind(row),
-                fog=mapper.fog(row),
-                relation_to_junction=mapper.relation_to_junction(row),
-                road_class=mapper.road_class(row),
-                surface_cond=mapper.surface_cond(row),
-                lighting=mapper.lighting(row),
-                traffic_control=mapper.traffic_control(row),
-                other_conditions=mapper.other_conditions(row)
-            )
-            accidents.append(new_accident)
-
     # Parse persons
     person_reader = csv.reader(person_file)
     first_row = next(person_reader)
     mapper = FARSPersonMapper(first_row, year)
     persons = []
-    drivers_per_veh = {}
+    driver_by_veh = {}
     for row in person_reader:
         if mapper.valid(row):
             veh_id = mapper.veh_id(row)
-            if veh_id not in drivers_per_veh:
-                drivers_per_veh[veh_id] = None
+            if veh_id not in driver_by_veh:
+                driver_by_veh[veh_id] = None
             new_person = person.new(
                 id=mapper.id(row),
                 acc_id=mapper.acc_id(row),
@@ -86,23 +55,90 @@ try:
             )
             persons.append(new_person)
             if new_person['type'] == 'DRIVER':
-                drivers_per_veh[veh_id] = new_person
+                driver_by_veh[veh_id] = new_person
 
     # Parse vehicles
     vehicle_reader = csv.reader(vehicle_file)
     first_row = next(vehicle_reader)
     mapper = FARSVehicleMapper(first_row, year)
     vehicles = []
+    speed_limits_by_acc = {}
+    surface_conds_by_acc = {}
+    traffic_controls_by_acc = {}
+    vehicles_by_acc = {}
     for row in vehicle_reader:
         if mapper.valid(row):
+            veh_id = mapper.id(row)
+            acc_id = mapper.acc_id(row)
+            if acc_id not in vehicles_by_acc:
+                vehicles_by_acc[acc_id] = []
+            vehicles_by_acc[acc_id].append(veh_id)
             new_vehicle = vehicle.new(
-                id=mapper.id(row),
-                acc_id=mapper.acc_id(row),
-                driver_sex=mapper.driver_sex(row, drivers_per_veh),
-                driver_age=mapper.driver_age(row, drivers_per_veh),
-                passenger_count=mapper.passenger_count(row)
+                id=veh_id,
+                acc_id=acc_id,
+                driver_sex=mapper.driver_sex(row, driver_by_veh),
+                driver_age=mapper.driver_age(row, driver_by_veh),
+                passenger_count=mapper.passenger_count(row),
+                type=mapper.type(row),
+                make=mapper.make(row),
+                model=mapper.model(row),
+                fuel_type=mapper.fuel_type(row),
+                hit_and_run=mapper.hit_and_run(row),
+                skidded=mapper.skidded(row),
+                rollover=mapper.rollover(row),
+                jackknifing=mapper.jackknifing(row),
+                first_impact_area=mapper.first_impact_area(row),
+                maneuver=mapper.maneuver(row),
+                prior_location=mapper.prior_location(row),
+                driver_drinking=mapper.driver_drinking(row)
             )
+            if year > 2009:
+                if acc_id not in speed_limits_by_acc:
+                    speed_limits_by_acc[acc_id] = []
+                print("Append speed_lim: {0}".format(mapper.speed_limit(row)))
+                speed_limits_by_acc[acc_id].append(mapper.speed_limit(row))
+            if year > 2010:
+                if acc_id not in surface_conds_by_acc:
+                    surface_conds_by_acc[acc_id] = []
+                print("Append surface_cond: {0}".format(mapper.surface_cond(row)))
+                surface_conds_by_acc[acc_id].append(mapper.surface_cond(row))
+            if year > 2010:
+                if acc_id not in traffic_controls_by_acc:
+                    traffic_controls_by_acc[acc_id] = []
+                print("Append traffic_control: {0}".format(mapper.traffic_control(row)))
+                traffic_controls_by_acc[acc_id].append(mapper.traffic_control(row))
             vehicles.append(new_vehicle)
+
+    # Parse accidents
+    accident_reader = csv.reader(accident_file)
+    first_row = next(accident_reader)
+    mapper = FARSAccidentMapper(first_row, year)
+    accidents = []
+    for row in accident_reader:
+        if mapper.valid(row, vehicles_by_acc):
+            new_accident = accident.new(
+                id=mapper.id(row),
+                country='USA',
+                timestamp=mapper.timestamp(row),
+                day_of_week=mapper.day_of_week(row),
+                latitude=mapper.latitude(row),
+                longitude=mapper.longitude(row),
+                persons_count=mapper.persons_count(row),
+                fatalities_count=mapper.fatalities_count(row),
+                vehicles_count=mapper.vehicles_count(row, vehicles_by_acc),
+                speed_limit=mapper.speed_limit(row, speed_limits_by_acc),
+                snow=mapper.snow(row),
+                rain=mapper.rain(row),
+                wind=mapper.wind(row),
+                fog=mapper.fog(row),
+                relation_to_junction=mapper.relation_to_junction(row),
+                road_class=mapper.road_class(row),
+                surface_cond=mapper.surface_cond(row, surface_conds_by_acc),
+                lighting=mapper.lighting(row),
+                traffic_control=mapper.traffic_control(row, traffic_controls_by_acc),
+                other_conditions=mapper.other_conditions(row)
+            )
+            accidents.append(new_accident)
 
     accident.insert(accidents)
     vehicle.insert(vehicles)

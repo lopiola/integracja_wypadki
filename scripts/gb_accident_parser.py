@@ -8,7 +8,7 @@ Parsing accident CSV files for Great Britain data and putting them into DB
 import csv
 import sys
 import db_api.accident
-from parsing.common import get_timestamp, translate_field, to_float, to_int, map_from_dictionary
+from parsing.common import get_timestamp, translate_field, to_float, to_int, map_from_dictionary, mph_to_kmph
 from parsing.gb_common import get_acc_id, GB_IDS_FILE, get_gb_ids
 import cPickle as pickle
 
@@ -55,11 +55,6 @@ def get_timestamp_from_date_time(date, time):
     return get_timestamp(**datetime)
 
 
-KILOMETERS_IN_MILE = 1.60934
-
-
-def mph_to_kmph(mph):
-    return int(mph * KILOMETERS_IN_MILE + 0.5)
 
 
 """

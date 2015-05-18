@@ -5,6 +5,8 @@
 Common functions for parsers.
 """
 
+KILOMETERS_IN_MILE = 1.60934
+
 """
 Translating dictionary for country codes
 """
@@ -144,3 +146,7 @@ def map_from_dictionary(dictionary):
     he given mapping dictionary.
     """
     return lambda value: dictionary[value]
+
+
+def mph_to_kmph(mph):
+    return int(mph * KILOMETERS_IN_MILE + 0.5)
