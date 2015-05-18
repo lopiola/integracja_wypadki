@@ -35,11 +35,11 @@ order by month, day;
 '''
 
 if __name__ == '__main__':
-    # for (year, count) in yearly_statistics():
-    #     print int(year), count
+    for (year, count) in yearly_statistics():
+        print int(year), count
 
     # for (month, count) in monthly_statistics():
     #     print int(month), count
 
-    for (day, month, count) in daily_statistics():
-        print int(day), int(month), count
+    # for (day, month, count) in daily_statistics():
+    #    print int(day), int(month), count
