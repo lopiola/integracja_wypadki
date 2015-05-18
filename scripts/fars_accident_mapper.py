@@ -37,9 +37,7 @@ class FARSAccidentMapper:
         self.day_of_week_index = self.index_of('DAY_WEEK')
         self.hour_index = self.index_of('HOUR')
         self.minute_index = self.index_of('MINUTE')
-        self.speed_limit_index = self.index_of('SP_LIMIT')
         self.road_class_index = self.index_of('ROAD_FNC')
-        self.surface_cond_index = self.index_of('SUR_COND')
         self.lighting_index = self.index_of('LGT_COND')
         self.weather_index = self.index_of('WEATHER')
 
@@ -48,6 +46,14 @@ class FARSAccidentMapper:
         if year > 2006:
             self.weather1_index = self.index_of('WEATHER1')
             self.weather2_index = self.index_of('WEATHER2')
+
+        self.speed_limit_index = -1
+        if year < 2010:
+            self.speed_limit_index = self.index_of('SP_LIMIT')
+
+        self.surface_cond_index = -1
+        if year < 2010:
+            self.surface_cond_index = self.index_of('SUR_COND')
 
         self.latitude_index = -1
         if year > 1998:
@@ -138,7 +144,7 @@ class FARSAccidentMapper:
         if self.latitude_index == -1:
             return 200.0
         value = fars_common.get_float(csv_row, self.latitude_index)
-        if value == -1.0 or value == 0.0:
+        if value == -1.0 or value == 0.0 or value == 77.7777 or value == 88.8888 or value == 99.9999:
             return 200.0
         initial_value = value
         if self.year < 2001:
@@ -158,7 +164,7 @@ class FARSAccidentMapper:
         if self.longitude_index == -1:
             return 200.0
         value = fars_common.get_float(csv_row, self.longitude)
-        if value == -1.0 or value == 0.0:
+        if value == -1.0 or value == 0.0 or value == 777.7777 or value == 888.8888 or value == 999.9999:
             return 200.0
         initial_value = value
         if self.year < 2001:

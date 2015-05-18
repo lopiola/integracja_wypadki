@@ -31,8 +31,7 @@ def daily_statistics_query():
     return '''
 select date_part('day', timestamp) as day, date_part('month', timestamp) as month, count(*) as count from accident
 group by month, day
-order by count desc
-limit 10;
+order by month, day;
 '''
 
 if __name__ == '__main__':
