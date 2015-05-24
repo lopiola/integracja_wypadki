@@ -95,17 +95,17 @@ try:
             if year > 2009:
                 if acc_id not in speed_limits_by_acc:
                     speed_limits_by_acc[acc_id] = []
-                print("Append speed_lim: {0}".format(mapper.speed_limit(row)))
+                # print("Append speed_lim: {0}".format(mapper.speed_limit(row)))
                 speed_limits_by_acc[acc_id].append(mapper.speed_limit(row))
-            if year > 2010:
+            if year > 2009:
                 if acc_id not in surface_conds_by_acc:
                     surface_conds_by_acc[acc_id] = []
-                print("Append surface_cond: {0}".format(mapper.surface_cond(row)))
+                # print("Append surface_cond: {0}".format(mapper.surface_cond(row)))
                 surface_conds_by_acc[acc_id].append(mapper.surface_cond(row))
-            if year > 2010:
+            if year > 2009:
                 if acc_id not in traffic_controls_by_acc:
                     traffic_controls_by_acc[acc_id] = []
-                print("Append traffic_control: {0}".format(mapper.traffic_control(row)))
+                # print("Append traffic_control: {0}".format(mapper.traffic_control(row)))
                 traffic_controls_by_acc[acc_id].append(mapper.traffic_control(row))
             vehicles.append(new_vehicle)
 

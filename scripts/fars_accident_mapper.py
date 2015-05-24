@@ -57,11 +57,17 @@ class FARSAccidentMapper:
 
         self.latitude_index = -1
         if year > 1998:
-            self.latitude_index = self.index_of('LATITUDE')
+            if 2001 <= year <= 2007:
+                self.latitude_index = self.index_of('latitude')
+            else:
+                self.latitude_index = self.index_of('LATITUDE')
 
         self.longitude_index = -1
         if year > 1998:
-            self.longitude_index = self.index_of('LONGITUD')
+            if 2001 <= year <= 2007:
+                self.longitude_index = self.index_of('longitud')
+            else:
+                self.longitude_index = self.index_of('LONGITUD')
 
         self.rel_to_junction_index = -1
         if year < 2010:
@@ -143,6 +149,8 @@ class FARSAccidentMapper:
     def latitude(self, csv_row):
         if self.latitude_index == -1:
             return 200.0
+        if fars_common.get_str(csv_row, self.latitude_index) == 'nan':
+            return 200.0
         value = fars_common.get_float(csv_row, self.latitude_index)
         if value == -1.0 or value == 0.0 or value == 77.7777 or value == 88.8888 or value == 99.9999:
             return 200.0
@@ -162,6 +170,8 @@ class FARSAccidentMapper:
 
     def longitude(self, csv_row):
         if self.longitude_index == -1:
+            return 200.0
+        if fars_common.get_str(csv_row, self.longitude_index) == 'nan':
             return 200.0
         value = fars_common.get_float(csv_row, self.longitude)
         if value == -1.0 or value == 0.0 or value == 777.7777 or value == 888.8888 or value == 999.9999:
@@ -511,7 +521,7 @@ def road_class_mapping():
 def surface_cond_mapping():
     return {
         'default': 'UNKNOWN',
-        2010: {
+        1975: {
             1: 'DRY',
             2: 'WET',
             3: 'SNOW',

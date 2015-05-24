@@ -49,10 +49,10 @@ class FARSVehicleMapper:
             self.occupants_index = self.index_of('NUMOCCS')
 
         self.fuel_index = -1
+        if 2010 <= year <= 2012:
+            self.fuel_index = self.index_of('FUELCODE')
         if year < 2010:
             self.fuel_index = self.index_of('FLDCD_TR')
-        else:
-            self.fuel_index = self.index_of('FUELCODE')
 
         self.skidded_index = -1
         if year > 2009:
@@ -63,14 +63,14 @@ class FARSVehicleMapper:
             self.maneuver_index = self.index_of('VEH_MAN')
 
         self.speed_limit_index = -1
-        if year > 2008:
+        if year > 2009:
             self.speed_limit_index = self.index_of('VSPD_LIM')
 
         self.surface_cond_index = -1
         if year > 2009:
             self.surface_cond_index = self.index_of('VSURCOND')
 
-        self.surface_cond_index = -1
+        self.traffic_control_index = -1
         if year > 2009:
             self.traffic_control_index = self.index_of('VTRAFCON')
 

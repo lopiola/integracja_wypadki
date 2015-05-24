@@ -15,7 +15,7 @@ def value_by_mapping(value, year, mapping):
     all_keys.sort()
     from_year = 0
     for i in xrange(0, len(all_keys)):
-        if year > all_keys[i]:
+        if year >= all_keys[i]:
             from_year = all_keys[i]
     if from_year == 0:
         return 'UNKNOWN'
