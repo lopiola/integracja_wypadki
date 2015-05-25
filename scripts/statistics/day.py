@@ -11,7 +11,7 @@ from scripts.db_api import accident
 def gb_query():
     return '''
 select date_part('day', timestamp) as day, date_part('month', timestamp) as month, count(*) as count from accident
-where country = 'USA'
+where country = 'GB'
 group by month, day
 order by month, day
 '''
@@ -20,7 +20,7 @@ order by month, day
 def usa_query():
     return '''
 select date_part('day', timestamp) as day, date_part('month', timestamp) as month, count(*) as count from accident
-where country = 'GB'
+where country = 'USA'
 group by month, day
 order by month, day
 '''
