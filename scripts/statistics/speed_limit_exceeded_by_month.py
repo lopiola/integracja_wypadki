@@ -4,19 +4,19 @@
 from scripts.db_api import accident
 
 
-def usa_query(day, month):
+def usa_query(month):
     return '''
 SELECT count(*), (select count(*) from accident
     join vehicle on(acc_id = accident.id)
-    where country = 'USA' and date_part('day', timestamp) = {0}
-        and date_part('month', timestamp) = {1}
+    where country = 'USA'
+        and date_part('month', timestamp) = {0}
         and vehicle.speed > accident.speed_limit
         and vehicle.speed > -1
         and accident.speed_limit > 0) as exceeded
 from accident
-where country = 'USA' and date_part('day', timestamp) = {0}
-        and date_part('month', timestamp) = {1};
-'''.format(day, month)
+where country = 'USA'
+        and date_part('month', timestamp) = {0};
+'''.format(month)
 
 
 def get_value(age, dictionary):
@@ -26,7 +26,7 @@ def get_value(age, dictionary):
 
 
 if __name__ == '__main__':
-    print('DAY\tALL\tEXCEEDED')
+    print('MONTH\tALL\tEXCEEDED')
     month_lengths = {
         1: 31,
         2: 29,
@@ -42,6 +42,5 @@ if __name__ == '__main__':
         12: 31
     }
     for month in xrange(1, 13):
-        for day in xrange(1, month_lengths[month] + 1):
-            usa_count = accident.execute_query(usa_query(day, month))
-            print('{0}.{1}\t{2}\t{3}'.format(int(day), int(month), usa_count[0][0], usa_count[0][1]))
+        usa_count = accident.execute_query(usa_query(month))
+        print('{0}\t{1}\t{2}'.format(int(month), usa_count[0][0], usa_count[0][1]))
