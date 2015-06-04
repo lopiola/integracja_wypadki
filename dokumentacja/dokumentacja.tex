@@ -1,0 +1,177 @@
+\documentclass[12pt]{aghdpl}
+% \documentclass[en,11pt]{aghdpl}  % praca w języku angielskim
+\usepackage[polish]{babel}
+%\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[hidelinks]{hyperref}
+
+% dodatkowe pakiety
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage{setspace}
+\usepackage{nameref}
+\usepackage{upquote}
+\usepackage{longtable}
+%\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{fixltx2e} % provides \textsubscript
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{longtable,booktabs}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+
+\lstloadlanguages{TeX,Bash}
+
+\lstset{
+  literate={ą}{{\k{a}}}1
+           {ć}{{\'c}}1
+           {ę}{{\k{e}}}1
+           {ó}{{\'o}}1
+           {ń}{{\'n}}1
+           {ł}{{\l{}}}1
+           {ś}{{\'s}}1
+           {ź}{{\'z}}1
+           {ż}{{\.z}}1
+           {Ą}{{\k{A}}}1
+           {Ć}{{\'C}}1
+           {Ę}{{\k{E}}}1
+           {Ó}{{\'O}}1
+           {Ń}{{\'N}}1
+           {Ł}{{\L{}}}1
+           {Ś}{{\'S}}1
+           {Ź}{{\'Z}}1
+           {Ż}{{\.Z}}1
+}
+
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\lstdefinestyle{console}{
+  commentstyle=\color{mygray},
+  basicstyle=\ttfamily\footnotesize,
+  tabsize=2,
+  rulecolor=,
+  basicstyle=\scriptsize,
+  upquote=true,
+  aboveskip={1.5\baselineskip},
+  columns=fixed,
+  showstringspaces=false,
+  extendedchars=true,
+  breaklines=true,
+  prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+  frame=single,
+  showtabs=false,
+  showspaces=false,
+  escapechar=\\,
+  showstringspaces=false,
+  identifierstyle=\ttfamily
+}
+
+%---------------------------------------------------------------------------
+
+\author{Łukasz Opioła, Beata Skiba}
+\shortauthor{Ł. Opioła, B.Skiba}
+
+\titlePL{Dokumentacja projektowa: "Analiza przyczyn wypadków drogowych"}
+\titleEN{}
+
+\shorttitlePL{Przyczyny wypadków drogowych} 
+\shorttitleEN{}
+
+\thesistype{Zaawansowane Techniki Integracji Systemów}
+
+\degreeprogramme{Informatyka}
+
+\date{2015}
+
+\department{Katedra Informatyki}
+
+\faculty{Wydział Informatyki, Elektroniki i Telekomunikacji}
+
+
+\setlength{\cftsecnumwidth}{10mm}
+
+%---------------------------------------------------------------------------
+
+\begin{document}
+
+\titlepages
+
+\tableofcontents
+
+\chapter{Temat i cel projektu}
+\label{chap:cel}
+\input{Temat-i-cel}
+
+\chapter{Plan pracy}
+\label{chap:plan}
+\input{Plan-pracy.tex}
+
+\chapter{Analiza źródeł danych}
+\label{chap:analiza-zrodel}
+\input{Analiza-zrodel-danych.tex}
+
+\chapter{Metodyka}
+\label{chap:metodyka}
+\input{Metodyka.tex}
+
+\chapter{Kryteria analizy}
+\label{chap:kryteria}
+\input{Kryteria-analizy.tex}
+
+\chapter{Projekt bazy danych}
+\label{chap:projekt-bazy}
+\input{Projekt-bazy-danych.tex}
+
+\chapter{Problemy podczas integracji}
+\label{chap:problemy}
+\input{Problemy-podczas-integracji.tex}
+
+\chapter{Wyniki analiz}
+\label{chap:wyniki-analiz}
+\input{Wyniki-analiz.tex}
+
+\chapter{Hipotezy analityczne}
+\label{chap:hipotezy}
+\input{Hipotezy-analityczne.tex}
+
+\chapter{Weryfikacja hipotez}
+\label{chap:weryfikacja-hipotez}
+
+\section{Hipoteza 1}
+\input{Hipoteza-1.tex}
+
+\section{Hipoteza 2}
+\input{Hipoteza-2.tex}
+
+\section{Hipoteza 3}
+\input{Hipoteza-3.tex}
+
+\section{Hipoteza 4}
+\input{Hipoteza-4.tex}
+
+\section{Hipoteza 5}
+\input{Hipoteza-5.tex}
+
+\section{Hipoteza 6}
+\input{Hipoteza-6.tex}
+
+\section{Hipoteza 7}
+\input{Hipoteza-7.tex}
+
+\section{Hipoteza 8}
+\input{Hipoteza-8.tex}
+
+\section{Hipoteza 9}
+\input{Hipoteza-9.tex}
+
+\section{Hipoteza 10}
+\input{Hipoteza-10.tex}
+
+\end{document}

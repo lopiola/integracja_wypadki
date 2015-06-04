@@ -1,0 +1,83 @@
+Na tej stronie zebrano opis problemów i trudności napotkanych podczas
+parsowania i integrowania danych.
+
+\begin{center}\rule{3in}{0.4pt}\end{center}
+
+\textbf{Problem}:\\Niewielka cześć wypadków z USA nie posiada
+określonego czasu wystąpienia.
+
+\textbf{Rozwiązanie}:\\Odrzucić wypadki z brakującymi danymi, ponieważ
+stanowią bardzo małą część rekordów (\textless{} 0.1\%).
+
+\begin{center}\rule{3in}{0.4pt}\end{center}
+
+\textbf{Problem}:\\Dane z USA publikowane są w różnych formatach w
+zależności od roku wystąpienia.
+
+\textbf{Rozwiązanie}:\\Poszukać bibliotek dla każdego używanego formatu
+i użyć ich do sprowadzenia danych do jednego formatu (CSV).
+
+\begin{center}\rule{3in}{0.4pt}\end{center}
+
+\textbf{Problem}:\\Znaczenie wartości atrybutów w danych z USA zmienia
+się w zależności od roku wystąpienia (np. wartość ``4'' w polu
+``ATMOSPHERIC CONDITIONS'' znaczy ``deszcz'' w latah 1975 - 1990,
+natomiast w późniejszych latach ``wiatr''). Część atrybutów przestaje
+być wspierana po jakimś czasie, natomiast część pojawia się dopiero w
+ostatnich latach. Ponadto, niektóry atrybuty przenoszone są pomiędzy
+różnymi bazami danych.
+
+\textbf{Rozwiązanie}:\\Zaprojektować mechanizm, który pozwoli na wygodne
+mapowanie wartości atrybutów w zależności od roku wystąpienia i bazy
+źródłowej. Schemat mapowania mógłby być zapisywany w pliku, co pozwoli
+na łatwe parsowanie wszystkich danych po stworzeniu odpowiednich
+schematów.
+
+\begin{center}\rule{3in}{0.4pt}\end{center}
+
+\textbf{Problem}:\\Bardzo duża ilość danych w zestawach z USA i GB.
+
+\textbf{Rozwiązanie}:\\Umieścić w bazie część danych z możliwie
+największym przekrojem jeśli chodzi o czas wystąpienia wypadku. W tym
+celu można odrzucić część wypadków z każdego roku, ale w taki sposób,
+aby uzyskać przykłady rekordów z różnych miesięcy.
+
+\begin{center}\rule{3in}{0.4pt}\end{center}
+
+\textbf{Problem}:\\Część rekordów posiada sporo nieokreślonych wartości
+atrybutów.
+
+\textbf{Rozwiązanie}:\\Ustalić limit nieokreślonych wartości, poniżej
+którego dane będą odrzucane. Należy kierować się tym, aby zostawić
+wypadki z wystarczającą do wnioskowania ilością informacji. Limit nie
+może być zbyt wysoki, aby nie spowodować odrzucenia dużej części danych.
+
+\begin{center}\rule{3in}{0.4pt}\end{center}
+
+\textbf{Problem}:\\Część atrybutów posiada bardzo duży zakres możliwych
+wartości, np. marka i model samochodu.
+
+\textbf{Rozwiązanie}:\\Zastosować jakąś metodę przechowywania możliwych
+wartości, np. w plikach tekstowych albo tabeli bazy danych, aby łatwo
+było się do nich odnosić podczas parsowania danych.
+
+\begin{center}\rule{3in}{0.4pt}\end{center}
+
+\textbf{Problem}:\\Dane z Wielkiej Brytanii nie mają dokładnego wieku
+osób, tylko zakwalifikowanie do przedziału wiekowego. Ponadto okazuje
+się że może danych o wieku nie być w ogóle.
+
+\textbf{Rozwiązanie}:\\Zastąpić przedział wiekowy reprezentatywną
+wartością - np. średnią, albo losować wartość z przedziału wiekowego z
+rozkładem jednostajnym. Tam gdzie wiek nie jest dostępny, zapisujemy do
+bazy wiek ujemny, tak aby było wiadomo, iż brak tu danych.
+
+\begin{center}\rule{3in}{0.4pt}\end{center}
+
+\textbf{Problem}:\\Dane z Wielkiej Brytanii nie mają danych o wszystkich
+pasażerach. Niektóre pojazdy posiadają według dostępnych danych 0
+pasażerów.
+
+\textbf{Rozwiązanie}:\\Ignorować wartość tego pola dla danych z Wielkiej
+Brytanii. Niemożliwe jest uzupełnienie tych danych a szkoda stracić
+wartość badawczą jaką ten atrybut daje dla danych z USA.
