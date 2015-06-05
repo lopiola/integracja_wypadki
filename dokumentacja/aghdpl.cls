@@ -50,7 +50,7 @@
 
 
 \def\thesisheaders{
-\fancyfoot[LE,RO]{\small \@shortauthor\quad\textit{\@shorttitlePL}}
+\fancyfoot[LE,RO]{ZTIS, 2015}
 }
 
 \def\thesistable{
@@ -61,7 +61,7 @@
 
 \DeclareOption{en}{
 \def\thesisheaders{
-\fancyfoot[LE,RO]{\small \@shortauthor\quad\textit{\@shorttitleEN}}
+\fancyfoot[LE,RO]{ZTIS, 2015}
 }
 
 \def\thesistable{
@@ -129,7 +129,7 @@ Manager: & {\itshape \@manager}\\
 \fancyhf{}
 \fancyhead{}
 %\fancyhead[L]{\slshape{\small \rightmark}}
-\fancyhead[RE,LO]{\slshape{\small \rightmark}}
+\fancyhead[RE,LO]{\small \@shortauthor\quad\textit{Temat D: Przyczyny wypadk{\'o}w drogowych}}
 %\fancyhead[R]{\bfseries \thepage}
 \fancyhead[RO,LE]{\bfseries \thepage}
 
@@ -182,23 +182,23 @@ Manager: & {\itshape \@manager}\\
 \xpatchcmd{\itemize}
   {\def\makelabel}
   {\ifnum\@itemdepth=1\relax
-     \setlength\itemsep{-12pt}% separation for first level
-     \setlength\parskip{-12pt}
-     \setlength\parsep{-12pt}
+     \setlength\itemsep{-14pt}% separation for first level
+     \setlength\parskip{-6pt}
+     \setlength\parsep{-6pt}
    \else
      \ifnum\@itemdepth=2\relax
        \setlength\itemsep{-14pt}% separation for second level
-       \setlength\parskip{-14pt}
-       \setlength\parsep{-14pt}
+       \setlength\parskip{-6pt}
+       \setlength\parsep{-6pt}
      \else
        \ifnum\@itemdepth=3\relax
-         \setlength\itemsep{-16pt}% separation for third level
-         \setlength\parskip{-16pt}
-         \setlength\parsep{-16pt}
+         \setlength\itemsep{-14pt}% separation for third level
+         \setlength\parskip{-6pt}
+         \setlength\parsep{-6pt}
        \else
-         \setlength\itemsep{-18pt}% separation for fourth level
-         \setlength\parskip{-18pt}
-         \setlength\parsep{-18pt}
+         \setlength\itemsep{-14pt}% separation for fourth level
+         \setlength\parskip{-6pt}
+         \setlength\parsep{-6pt}
    \fi\fi\fi\def\makelabel
   }
  {}
