@@ -1,0 +1,957 @@
+\subsubsection{Cel dokumentu}\label{cel-dokumentu}
+
+Niniejszy dokument ma na celu podsumowanie informacji na temat źródeł
+danych, które będziemy mogli wykorzystać w projekcie. Charakterystyka
+dokumentów obejmuje zakres danych, możliwe problemy z ich otrzymaniem i
+wykorzystaniem a także zawartość danych - informacje o wypadkach, jakie
+można znaleźć w opisywanych danych. Dokument zawiera również wstępną
+definicję kryteriów, w ramach których będziemy analizować przyczyny
+wypadków drogowych, z uwzględnieniem informacji o źródłach.
+
+\section{Przegląd źródeł danych}\label{przeglad-zrode-danych}
+
+Głównymi obszarami zainteresowania przy szukaniu źródeł danych były:
+Polska, Europa Zachodnia, USA, Kanada
+
+\begin{enumerate}
+\item
+  Polska
+
+  \begin{itemize}
+  \item
+    Polskie Obserwatorium Bezpieczeństwa Ruchu Drogowego (POBR)
+
+    \begin{itemize}
+    \item
+      \url{http://www.obserwatoriumbrd.pl/pl/}\\
+    \item
+      System składa się z dwóch części: hurtowni danych i portalu
+      informacyjnego z interaktywną mapą do przeglądania danych z
+      hurtowni.\\
+    \item
+      Dostęp jest ograniczony - bez rejestracji możliwy jedynie dostęp
+      do wersji demo interaktywnej mapy oraz części zbiorczych
+      statystyk.\\
+    \item
+      Studenci, dziennikarze, przedstawiciele społeczności lokalnych
+      mogą uzyskać czasowy dostęp do pełnej bazy danych, po uprzednim
+      pisemnym potwierdzeniu, że dane potrzebne będą do przygotowywanych
+      opracowań.\\
+    \item
+      Z informacji na stronie wynika, że dane powinny być rzetelne i
+      pełne.\\
+    \item
+      Kroki konieczne do otrzymania pełnego dostępu można znaleźć
+      {[}tutaj{]}.(\url{http://www.obserwatoriumbrd.pl/pl/rejestracja/zasady_udostepniania})\\
+    \item
+      Wnioskując po wersji demo mapy interaktywnej, w hurtowni danych
+      dostępne powinny być przynajmniej następujące informacje na temat
+      wypadków:
+
+      \begin{itemize}
+      \item
+        miejsce\\
+      \item
+        czas\\
+      \item
+        droga (numer, rodzaj)\\
+      \item
+        obszar zabudowany/niezabudowany\\
+      \item
+        informacje o uczestnikach i ofiarach wypadku
+
+        \begin{itemize}
+        \itemsep1pt\parskip0pt\parsep0pt
+        \item
+          wiek\\
+        \item
+          płeć\\
+        \item
+          pojazd\\
+        \item
+          obrażenia\\
+        \item
+          ``ciężkość'' wypadku (śmiertelny, cięzki, lekki)\\
+        \end{itemize}
+      \item
+        obecność alkoholu u sprawcy\\
+      \item
+        nadmierna prędkość\\
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\item
+  Europa Zachodnia
+
+  \begin{itemize}
+  \item
+    CARE
+
+    \begin{itemize}
+    \itemsep1pt\parskip0pt\parsep0pt
+    \item
+      \url{http://ec.europa.eu/idabc/en/document/2281/5926.html} ,
+      \url{http://ec.europa.eu/transport/road_safety/specialist/statistics/index_en.htm}\\
+    \item
+      Zawiera dane dostarczane przez odpowiednie instytucje ze
+      wszystkich krajów Unii Europejskiej w postaci przetworzonej do
+      wspólnego formatu\\
+    \item
+      Dostęp bezpośrednio do bazy niestety nie jest możliwy, dla
+      wiadomości publicznej dostępne są tylko wybrane zbiorcze
+      statystyki\\
+    \end{itemize}
+  \item
+    Wielka Brytania
+
+    \begin{itemize}
+    \item
+      \url{http://data.gov.uk/dataset/road-accidents-safety-data}\\
+    \item
+      Dane z wypadków na drogach publicznych, zgłoszonych na policję i
+      odnotowanych przy wykorzystaniu formularza STATS19.\\
+    \item
+      Dane dostępne dla lat 1979 - 2013\\
+    \item
+      Dane obejmują m.in.:
+
+      \begin{itemize}
+      \itemsep1pt\parskip0pt\parsep0pt
+      \item
+        okoliczności wypadku\\
+      \item
+        typy pojazdów (marka i model)\\
+      \item
+        dane o ofiarach\\
+      \item
+        informacje o poziomie alkoholu w wydychanym powietrzu\\
+      \end{itemize}
+    \end{itemize}
+  \item
+    Belgia-Flandria
+
+    \begin{itemize}
+    \itemsep1pt\parskip0pt\parsep0pt
+    \item
+      \url{http://fimi.ua.ac.be/data/}\\
+    \item
+      Dane zebrane przez National Institute of Statistics (NIS)\\
+    \item
+      Obejmują lata 1991 - 2013 i tylko jeden region. Wydaje się, że
+      jest to zbyt mocne ograniczenie.
+    \end{itemize}
+  \end{itemize}
+\item
+  USA i Kanada
+
+  \begin{itemize}
+  \item
+    NHTSA: National Automotive Sampling System (NASS) - Crashworthiness
+    Data System (CDS)
+
+    \begin{itemize}
+    \item
+      \url{http://www.nhtsa.gov/NASS}\\
+    \item
+      \url{ftp://ftp.nhtsa.dot.gov/NASS/}\\
+    \item
+      Losowe próbki danych na temat wypadków o różnych skutkach (od
+      małych po śmiertelne). Około 5'000 przekrojowo wybranych wypadków
+      rocznie jest dokładnie badanych i dane są publikowane. Dane są
+      zanonimizowane.\\
+    \item
+      Dostępne atrybuty (m. in.):
+
+      \begin{itemize}
+      \itemsep1pt\parskip0pt\parsep0pt
+      \item
+        powaga wypadku (obrażenia, ilość rannych)\\
+      \item
+        pijani kierowcy\\
+      \item
+        data\\
+      \item
+        udział narkotyków\\
+      \item
+        rodzaj wypadku\\
+      \item
+        dane nt. pojazdów, wyposażenie\\
+      \item
+        brak danych o pogodzie, miejscu zdarzenia\\
+      \end{itemize}
+    \end{itemize}
+  \item
+    NHTSA: Fatality Analysis Reporting System (FARS)
+
+    \begin{itemize}
+    \item
+      \url{http://www.nhtsa.gov/FARS}\\
+    \item
+      \url{ftp://ftp.nhtsa.dot.gov/FARS/}\\
+    \item
+      Wypadki, w wyniku których odnotowano przynajmniej jedną ofiarę
+      śmiertelną (max. w ciągu 30 dni po wypadku).\\
+    \item
+      Od roku 1975 zebrano dane z wypadków w trzech typach dokumentów:
+      Accident, Vehicle, Person.\\
+    \item
+      Od roku 2010 dodano wiele nowych dokuemntów: Peperwork, Cevent,
+      Vevent, Vsoe, Distract, Factor, Drimpair, Nmimpair, Maneuver,
+      Nmprior, Nmcrash, Safetyeq, Violatn, Vision, Damage, Vindecode
+      (2013).\\
+    \item
+      Dostępne atrybuty (m. in.):
+
+      \begin{itemize}
+      \itemsep1pt\parskip0pt\parsep0pt
+      \item
+        szczegółowe dane o biorących udział w wypadku\\
+      \item
+        szczegółowe dane o pojazdach\\
+      \item
+        miejsce\\
+      \item
+        data\\
+      \item
+        rodzaj wypadku\\
+      \item
+        sposób dojścia do wypadku\\
+      \item
+        szczegóły drogi (rodzaj, odl. od skrzyżowania etc)\\
+      \item
+        oświetlenie\\
+      \item
+        pogoda\\
+      \item
+        pijani kierowcy\\
+      \end{itemize}
+    \end{itemize}
+  \item
+    Kanada - nie znaleziono publicznie dostępnych zestawów danych
+  \end{itemize}
+\end{enumerate}
+
+\section{Dane z Wielkiej Brytanii}\label{dane-z-wielkiej-brytanii}
+
+\textbf{Ogólne informacje}
+
+Zbiór danych z Wielkiej Brytanii to dane policyjne z wypadków na drogach
+publicznych, zgłoszonych i odnotowanych przez
+\href{https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/230590/stats19.pdf}{formularz
+STATS19}, który jest wypełniany przez funkcjonariuszy przy zgłoszeniu
+zdarzenia. Dane są dostępne pod adresem
+\url{http://data.gov.uk/dataset/road-accidents-safety-data}.
+Geograficznie dane obejmują Anglię, Walię i Szkocję zaś czasowo obejmują
+okres 1979 - 2013r.
+
+\textbf{Format danych}
+
+Dane są dostępne w dwóch paczkach, osobno dane dla lat 1979 - 2004 i
+2005 - 2013, w postaci plików csv. Każda paczka danych zawiera trzy
+pliki csv zawierające komplet danych opisujących wypadek:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  \emph{Accident} - dane ogólne na temat okoliczności wypadku\\
+\item
+  \emph{Casualty} - dane na temat ofiar wypadku i ich obrażeń, połączone
+  logicznie z plikiem accident poprzez atrybut ACC\_Index, który
+  jednoznacznie identyfikuje wypadek. Dla jednego wypadku możemy mieć
+  kilka wpisów w pliku casualty, jeżeli była więcej niż jedna osoba
+  poszkodowana.\\
+\item
+  \emph{Vehicle} - dane na temat pojazdów, które brały udział w kolizji
+  i ich obrażeń, połączone logicznie z plikiem accident poprzez atrybut
+  ACC\_Index. Dla jednego wypadku możemy mieć kilka wpisów w pliku
+  vehicle.\\Pierwsza linijka każdego z plików zawiera nazwy atrybutów.
+\end{itemize}
+
+Nazwy atrybutów oraz ich wartości są przeniesione bezpośrednio z
+\href{https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/230590/stats19.pdf}{formularza
+STATS19}. Pozwala to na interpretację kodów wartości zawartych w plikach
+i na ich translację na wartości zrozumiałe dla człowieka. Dodatkową
+pomoc w interpretacji wartości może stanowić
+\href{https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/230596/stats20-2011.pdf}{dokument
+STATS20}, który zawiera dokładne informacje co do tego, jak wypełniać
+formularz STATS19. Przedstawiony powyżej podział na trzy pliki
+odzwierciedla podział formularza na analogiczne trzy części.
+
+Z dodatkowych informacji istotnych dla realizacji projektu należy
+zaznaczyć, że dane dotyczące części atrybutów mogą być niedostępne (lub
+nie dotyczyć danego wypadku), wartość takiego atrybutu jest wtedy równa
+-1. Zgodnie z decyzją projektową ograniczenia się do wypadków
+śmiertelnych jest istotna również możliwość przefiltrowania danych i
+wybrania wyłącznie wypadków śmiertelnych. Jest to możliwe dzięki polu
+Casualty\_Severity (ciężkość wypadku) w pliku dotyczącym ofiar wypadku,
+które może przyjmować jedną z trzech wartości: fatal, serious i slight
+(śmiertelny, poważny, lekki).
+
+\textbf{Ilość danych}
+
+Paczka danych z lat 1979 - 2004 zawiera następującą ilość danych:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  6224198 wypadków\\
+\item
+  8264687 ofiar\\
+\item
+  10981968 pojazdów\\Paczka danych z lat 2005 - 2013 zawiera następującą
+  ilość danych:\\
+\item
+  1494275 wypadków\\
+\item
+  2022243 ofiar\\
+\item
+  2735898 pojazdów
+\end{itemize}
+
+Pozostaje do ustalenia jaki procent tych danych stanowią dane o
+wypadkach śmiertelnych
+
+\textbf{Atrybuty}
+
+\textbf{\emph{Szczegóły dot. wypadku}}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  data i godzina\\
+\item
+  dzień tygodnia\\
+\item
+  miejsce wypadku (długość i szerokość geograficzna lub współrzędne
+  OSGR)\\
+\item
+  powaga wypadku\\
+\item
+  lekki\\
+\item
+  poważny\\
+\item
+  śmiertelny\\
+\item
+  szczegóły dróg (pierwszej i drugiej)\\
+\item
+  klasa drogi\\
+\item
+  numer drogi\\
+\item
+  liczba ofiar\\
+\item
+  liczba pojazdów\\
+\item
+  typ drogi\\
+\item
+  rondo\\
+\item
+  droga jednokierunkowa\\
+\item
+  jezdnia podwójna\\
+\item
+  jezdnia pojedyncza\\
+\item
+  droga dojazdowa\\
+\item
+  nieznany\\
+\item
+  ograniczenie prędkości na drodze\\
+\item
+  szczegóły dot. skrzyżowania (np. dalej niż 20 metrów od skrzyżowania,
+  na rondzie, na wyjeździe z drogi prywatnej)\\
+\item
+  sposób kierowania ruchem (dla wypadków na skrzyżowaniu)\\
+\item
+  szczegóły dot. przejścia dla pieszych i kontroli nad nim (np. dalej
+  niż 50m od najbliższego przejścia, czy na przejściu kontrola osób
+  autoryzowanych)\\
+\item
+  rodzaj przejścia dla pieszych\\
+\item
+  pogoda\\
+\item
+  dobra, bez porywistego wiatru\\
+\item
+  deszcz, bez porywistego wiatru\\
+\item
+  śnieg, bez porywistego wiatru\\
+\item
+  dobra, porywisty wiatr\\
+\item
+  deszcz, porywisty wiatr\\
+\item
+  śnieg, porywisty wiatr\\
+\item
+  mgła\\
+\item
+  inne\\
+\item
+  nieznane\\
+\item
+  stan nawierzchni\\
+\item
+  sucha\\
+\item
+  mokra/wilgotna\\
+\item
+  śnieg\\
+\item
+  mróz/lód\\
+\item
+  zalana (powyżej 3cm wody)\\
+\item
+  światło\\
+\item
+  światło dzienne\\
+\item
+  ciemność, oświetlenie, zapalone\\
+\item
+  ciemność, oświetlenie, nie zapalone\\
+\item
+  ciemność, brak oświetlenia\\
+\item
+  ciemność, brak danych co do oświetlenia\\
+\item
+  warunki nadzwyczajne (np. niedziałające światła, roboty na drodze,
+  uszkodzona nawierzchnia)\\
+\item
+  zagrożenia na jezdni (np. obiekty na jezdni, udział w poprzedzającym
+  wypadku, pieszy na jezdni, zwierzę na jezdni)\\
+\item
+  Obecność policjanta na miejscu wypadku\\
+\item
+  Obszar zabudowany/niezabudowany
+\end{itemize}
+
+\textbf{\emph{Szczegóły dot. pojazdu i kierowcy}}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  kierownica po lewej stronie\\
+\item
+  typ samochodu (podział na 10 kategorii)\\
+\item
+  pojemność silnika\\
+\item
+  kod napędu (propulsion code)\\
+\item
+  pojazdy z naczepami i przegubowe\\
+\item
+  wiek kierowcy\\
+\item
+  kod pocztowy kierowcy\\
+\item
+  ucieczka z miejsca zdarzenia (hit and run)\\
+\item
+  test alkoholu w wydychanym powietrzu u kierowcy (?)\\
+\item
+  nie dotyczy\\
+\item
+  pozytywny\\
+\item
+  nie proszony o test\\
+\item
+  nie zgodził się na test\\
+\item
+  nie było kontaktu z kierowcą w momencie wypadku\\
+\item
+  nie podano (powody zdrowotne)\\
+\item
+  płeć kierowcy\\
+\item
+  umiejscowienie pojazdu w momencie zderzenia (np. na głównej drodze, na
+  pasie dla tramwajów, autobusów lub rowerów)\\
+\item
+  umiejscowienie pojazdu na skrzyżowaniu (np. w odległości ponad 20m,
+  wjeżdżający na skrzyżowanie, zjeżdżający, wjeżdżający na rondo,
+  zjeżdżający z głównej drogi lub wjeżdżający na nią, na środku
+  skrzyżowania)\\
+\item
+  wykonywany manewr (np. cofanie, zaparkowany, zatrzymany, zatrzymywanie
+  się, skręcanie, zawracanie)\\
+\item
+  obiekt uderzony na jezdni (np. poprzedni wypadek, zaparkowany pojazd,
+  most, otwarte drzwi pojazdu, krawężnik)\\
+\item
+  miejsce zjazdu z jezdni\\
+\item
+  poślizg i dachowanie\\
+\item
+  brak poślizgu, dachowania, jack-knifingu (złożenie się samochodu z
+  naczepą na kształt scyzoryka)\\
+\item
+  poślizg\\
+\item
+  poślizg i dachowanie\\
+\item
+  jack-knifing\\
+\item
+  jack-knifing i dachowanie\\
+\item
+  dachowanie\\
+\item
+  pierwszy obiekt uderzony poza jezdnią (np. znak drogowy, latarnia,
+  drzewo)\\
+\item
+  pierwsze miejsce uderzenia\\
+\item
+  przód\\
+\item
+  tył\\
+\item
+  lewy bok\\
+\item
+  prawy bok\\
+\item
+  powód podróży\\
+\item
+  w ramach pracy\\
+\item
+  do/z pracy\\
+\item
+  wiezienie dziecka do/ze szkoły\\
+\item
+  inne\\
+\item
+  nieznane\\
+\item
+  kierunek jazdy pojazdu, 10 możliwości, włączając samochód zaparkowany
+\end{itemize}
+
+\textbf{\emph{Szczegóły dot. poszkodowanych}}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  w którym pojeździe znajdowała się ofiara\\
+\item
+  kod pocztowy\\
+\item
+  płeć\\
+\item
+  typ poszkodowanego\\
+\item
+  kierowca\\
+\item
+  pasażer\\
+\item
+  pieszy\\
+\item
+  wiek poszkodowanego\\
+\item
+  powaga obrażeń\\
+\item
+  lekkie\\
+\item
+  poważne\\
+\item
+  śmiertelne\\
+\item
+  umiejscowienie pieszego (np. na jezdni, na pasach, na krawężniku, na
+  wysepce centralnej)\\
+\item
+  kierunek podążania pieszego, podobnie jak dla pojazdów 10 możliwości,
+  łącznie z nieruchomym pieszym\\
+\item
+  ruch pieszego względem pojazdu\\
+\item
+  czy pieszy był pracownikiem utrzymania dróg (road maintenance
+  worker)\\
+\item
+  czy kierujący rowerem miał na sobie kask\\
+\item
+  na którym siedzeniu znajdował się pasażer\\
+\item
+  przednie\\
+\item
+  tylnie\\
+\item
+  szczegóły pasażera autokaru lub autobusu\\
+\item
+  poszkodowany nie był pasażerem autobusu\\
+\item
+  pasażer wsiadał\\
+\item
+  pasażer wysiadał\\
+\item
+  pasażer stał\\
+\item
+  pasażer siedział\\
+\item
+  pasy bezpieczeństwa\\
+\item
+  nie dotyczy\\
+\item
+  założone, potwierdzone niezależnie\\
+\item
+  założone , nie potwierdzone niezależnie\\
+\item
+  nie założone\\
+\item
+  brak danych
+\end{itemize}
+
+\section{Dane z USA}\label{dane-z-usa}
+
+\textbf{Ogólne informacje}
+
+Zbiór danych pochodzi z portalu organizacji NHTSA (National Highway
+Traffic Safety Administration). Jest to jeden z kilku publicznie
+dostępnych zbiorów, nazywa się FARS (Fatality Analisys Reporting
+System). Więcej informacji \href{http://www.nhtsa.gov/FARS}{TUTAJ}.
+Zestaw zawiera dane ze wszystkich wypadków śmiertelnych zanotowanych na
+terenie Stanów Zjednoczonych. Zbiory publikowane są corocznie, w obecnej
+chwili dostępne są paczki z lat 1975 - 2013.
+
+\textbf{Format danych}
+
+Dane dostępne są w postaci plików bazy danych w jednym z wybranych
+formatów: \textbf{.sas7bdat} lub \textbf{.dbf}. Są to standaryzowane
+formaty i istnieje wiele narzędzi umożliwiających ich konwersję. Każda
+paczka zawiera następujące pliki:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  ACCIDENT (od 1975) - dane ogólne na temat okoliczności wypadku.\\
+\item
+  VEHICLE (od 1975) - informacje na temat pojazdów biorących udział w
+  wypadku, mogą być skojarzone z rekordem ACCIDENT za pomocą pola
+  ST\_CASE.\\
+\item
+  PERSON (od 1975) - informacje na temat osób (zmotoryzowanych i
+  pieszych) biorących udział w wypadku. Mogą być zkojarzone z rekordami
+  ACCIDENT i VEHICLE.\\
+\item
+  PAPERWORK (od 2010) - informacje na temat zaparkowanych pojazdów lub
+  maszyn robót drogowych (biorących udział w wyapdku).\\
+\item
+  CEVENT (od 2010) - lista wydarzeń, które doprowadziły do wypadku.\\
+\item
+  VEVENT (od 2010) - opisuje sekwencje wydarzeń z CEVENT\\
+\item
+  VSOE (od 2010) - uproszczona baza VEVENT\\
+\item
+  DAMAGE (od 2010) - lista uszkodzeń pojazdów\\
+\item
+  DISTRACT (od 2010) - czynniki odwracające uwgę kierowców\\
+\item
+  DRIMPAIR (od 2010) - dane na temat niepełnosprawności kierowców\\
+\item
+  FACTOR (od 2010) - okoliczności pojazdów, które mogły doprowadzić do
+  wypadku\\
+\item
+  MANEUVER (od 2010) - manewry wykonane przez kierowcę aby uniknąć
+  wypadku\\
+\item
+  VIOLATN (od 2010) - wykroczenia kierowców\\
+\item
+  VISION (od 2010) - czynniki, które mogły zmniejszać widoczność\\
+\item
+  NMCRASH (od 2010) - nieodpowiednie zachowania osób nieporuszających
+  się pojazdami\\
+\item
+  NMIMPAIR (od 2010) - dane nt. niepełnosprawości osób nieporuszających
+  się pojazdami\\
+\item
+  NMPRIOR (od 2010) - dane nt. czynności wykonywanych przez osoby
+  nieporuszające się pojazdami przed wypadkiem\\
+\item
+  SAFETYEQ (od 2010) - dane nt. wyposażenia BHP u osób nieporuszających
+  się pojazdami przed wypadkiem\\
+\item
+  VINDECODE (od 2013) - Kody VIN pojazdów biorących udział w wypadku
+\end{itemize}
+
+\textbf{Atrybuty}
+
+Z racji, że większość plików dostępnych jest dopiero od 2010, nie będą
+one brane pod uwagę przy integracji danych. Bazy ACCIDENT, VEHICLE i
+PERSON zawierają bardzo szczegółowe dane, które powinny wystarczyć do
+analiz pod kątem przyczyn wypadków drogowych.
+
+Poniżej przedstawiono jakie dane o wypadkach są dostępne w rozważanych
+bazach:
+
+\emph{\textbf{ACCIDENT}}
+
+\begin{itemize}
+\item
+  liczba osób
+
+  \begin{itemize}
+  \itemsep1pt\parskip0pt\parsep0pt
+  \item
+    zmotoryzowane\\
+  \item
+    niezmotoryzowane\\
+  \end{itemize}
+\item
+  liczba pojazdów
+
+  \begin{itemize}
+  \itemsep1pt\parskip0pt\parsep0pt
+  \item
+    poruszające się\\
+  \item
+    zaparkowane\\
+  \item
+    pracujące\\
+  \end{itemize}
+\item
+  miejsce
+
+  \begin{itemize}
+  \itemsep1pt\parskip0pt\parsep0pt
+  \item
+    stan\\
+  \item
+    miasto\\
+  \item
+    okręg\\
+  \item
+    rodzaj drogi\\
+  \item
+    numer drogi i kamień milowy\\
+  \item
+    wsp. GPS\\
+  \item
+    jurysdykcja drogi\\
+  \end{itemize}
+\item
+  data (dzień, miesiąc, rok, godzina, minuta)\\
+\item
+  okoliczności
+
+  \begin{itemize}
+  \itemsep1pt\parskip0pt\parsep0pt
+  \item
+    pierwsze szkodliwe wydarzenie\\
+  \item
+    rodzaj kolizji\\
+  \item
+    umiejscowienie względem skrzyżowania\\
+  \item
+    udział autobusu szkolnego\\
+  \item
+    wypadek przy torach kolejowych\\
+  \item
+    czas zgłoszenia\\
+  \item
+    czas przyjazdu służb na miejsce\\
+  \item
+    czas dotarcia do szpitala\\
+  \item
+    \textbf{przyczyny wypadku} (np dziurawa droga, ostry zakręt, warunki
+    pogodowe, śliska nawierzchnia)\\
+  \item
+    pijani kierowcy\\
+  \item
+    ofiary śmiertelne\\
+  \end{itemize}
+\item
+  oświetlenie
+
+  \begin{itemize}
+  \itemsep1pt\parskip0pt\parsep0pt
+  \item
+    dzienne\\
+  \item
+    ciemno / ciemno, nie oświetlone\\
+  \item
+    ciemno ale oświetlone\\
+  \item
+    zmierzch\\
+  \item
+    świt\\
+  \item
+    ciemno - nieznane oświetlenie\\
+  \item
+    inne\\
+  \item
+    nieraportowane\\
+  \item
+    nieznane\\
+  \end{itemize}
+\item
+  warunki pogodowe
+
+  \begin{itemize}
+  \itemsep1pt\parskip0pt\parsep0pt
+  \item
+    brak niekorzystnych warunków\\
+  \item
+    deszcz lub mżawka\\
+  \item
+    deszcz ze śniegiem lub grad\\
+  \item
+    śnieg lub zamieć\\
+  \item
+    mgła, dym lub smog\\
+  \item
+    porywisty wiatr\\
+  \item
+    wiatr unoszący piach, ziemię lub pył\\
+  \item
+    inne\\
+  \item
+    zachmurzenie\\
+  \item
+    nie raportowane\\
+  \item
+    nieznane
+  \end{itemize}
+\end{itemize}
+
+\emph{\textbf{VEHICLE}}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  ilość pasażerów\\
+\item
+  rodzaj pojazdu\\
+\item
+  ucieczka z miejsca wypadku\\
+\item
+  stan w którym pojazd został zarejestrowany\\
+\item
+  posiadacz samochodu\\
+\item
+  marka\\
+\item
+  model\\
+\item
+  typo nadwozia\\
+\item
+  rok produkcji\\
+\item
+  VIN\\
+\item
+  ciągnięte przyczepy\\
+\item
+  jackknifing\\
+\item
+  przedział wagowy\\
+\item
+  konfiguracja pojazdu (ciężarowe)\\
+\item
+  rodzaj naczepy\\
+\item
+  przewóz niebezpiecznych materiałów\\
+\item
+  specjalne przeznaczenie pojazdu\\
+\item
+  prędkość poruszania\\
+\item
+  dachowanie / obrót pojazdu\\
+\item
+  miejsce uderzenia\\
+\item
+  rozmiar uszkodzeń\\
+\item
+  usunięcie pojazdu z miejsca wypadku\\
+\item
+  najbardziej szkodliwe wydarzenie\\
+\item
+  czynniki zw. ze stanem pojazu, które mogły być \textbf{przyczyną
+  wypadku}\\
+\item
+  pojawienie się pożaru\\
+\item
+  ilość ofiar\\
+\item
+  czy kierowca pił\\
+\item
+  obecność kierowcy\\
+\item
+  stan, gdzie wydano prawo jazdy\\
+\item
+  kod pocztowy kierowcy\\
+\item
+  wzrost kierowcy\\
+\item
+  waga kierowcy\\
+\item
+  poprzednie wypadki kierowcy (liczba)\\
+\item
+  poprzednie zawieszenia prawa jazdy i skazania\\
+\item
+  ilość mandatów za prędkość i innych\\
+\item
+  daty pierwszych i ostatnich skazań / zawieszeń\\
+\item
+  określenie stopnia prezkroczenia prędkości\\
+\item
+  stan kierowcy (zaspany, depresja, chory, blackout, leki, narkotyki) -
+  bardzo dużo możliwych wartości\\
+\item
+  ograniczenie prędkości\\
+\item
+  nawierzchnia i jej stan\\
+\item
+  znaki, jakie napotkał pojazd przez wypadkiem\\
+\item
+  sposób poruszania przed wypadkiem\\
+\item
+  krytyczne wydarzenie przed wypadkiem\\
+\item
+  manewr wymijający\\
+\item
+  stabilność pojazdu przed wypadkiem (np. trzyma się drogi, poślizg)\\
+\item
+  pozycja na drodze przed wypadkiem\\
+\item
+  rodzaj wypadku
+\end{itemize}
+
+\emph{\textbf{PERSON}}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  wiek\\
+\item
+  płeć\\
+\item
+  rodzaj (pieszy, zmotoryzowany, rowerzysta etc)\\
+\item
+  poziom obrażeń\\
+\item
+  zajmowane miejsce w pojeździe\\
+\item
+  użycie pasów / hełmu\\
+\item
+  czy powyższe były używane w odpowiedni sposób\\
+\item
+  czy poduszka się otworzyła\\
+\item
+  czy ciało wyleciało z pojazdu, i którędy\\
+\item
+  czy osoba musiała być wydobyta przy użyciu sprzętu lub siły\\
+\item
+  spożycie alkoholu\\
+\item
+  sposób określenia spożycia\\
+\item
+  czy test na nietrzeźwość był wykonany\\
+\item
+  udział narkotyków\\
+\item
+  czy była transportowana do szpitala\\
+\item
+  śmierć na miejscu lub w drodze do szpitala\\
+\item
+  data śmierci\\
+\item
+  \textbf{przyczyny wypadku} (dla osób niebędących kierowcą)\\
+\item
+  czas między wypadkiem a śmiercią\\
+\item
+  rasa (pochodzenie)\\
+\item
+  pozycja przed wypadkiem (niezmotoryzowani)
+\end{itemize}
