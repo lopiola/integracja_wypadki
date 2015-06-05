@@ -15,7 +15,7 @@
 \ProvidesClass{aghdpl} 
 \DeclareOption{pdflatex}{\pdflatextrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}} 
-\ProcessOptions\LoadClass[a4paper,openright]{report} 
+\ProcessOptions\LoadClass[a4paper,twoside,openright]{report} 
 
 \RequirePackage{times}
 \RequirePackage[T1]{fontenc}
@@ -28,7 +28,7 @@
 \RequirePackage{tocloft}
 \RequirePackage{polski}
 
-\geometry{lmargin=20mm, rmargin=20mm, tmargin=20mm, bmargin=20mm, foot=10mm, head=10mm}
+\geometry{lmargin=30mm, rmargin=20mm, tmargin=30mm, bmargin=30mm, foot=10mm, head=10mm}
 \definecolor{Green}{rgb}{0.1,0.5,0.1}
 
 \def\shorttitlePL#1   {\gdef\@shorttitlePL{#1}}
@@ -117,7 +117,13 @@ Manager: & {\itshape \@manager}\\
 
 \clearpage \titlepage 
 
-\setcounter{page}{2}
+{~~}\vspace{20mm}
+
+\vspace*{15cm} \vfill
+
+\clearpage
+
+\setcounter{page}{3}
 }
 
 
@@ -176,30 +182,3 @@ Manager: & {\itshape \@manager}\\
 \setlength{\cftparskip}{2pt}
 \setlength{\cftbeforechapskip}{0mm}
 \renewcommand{\cftchappagefont}{\normalsize}
-
-% Smaller spaces between items of itemize
-\usepackage{xpatch}
-\xpatchcmd{\itemize}
-  {\def\makelabel}
-  {\ifnum\@itemdepth=1\relax
-     \setlength\itemsep{-12pt}% separation for first level
-     \setlength\parskip{-12pt}
-     \setlength\parsep{-12pt}
-   \else
-     \ifnum\@itemdepth=2\relax
-       \setlength\itemsep{-14pt}% separation for second level
-       \setlength\parskip{-14pt}
-       \setlength\parsep{-14pt}
-     \else
-       \ifnum\@itemdepth=3\relax
-         \setlength\itemsep{-16pt}% separation for third level
-         \setlength\parskip{-16pt}
-         \setlength\parsep{-16pt}
-       \else
-         \setlength\itemsep{-18pt}% separation for fourth level
-         \setlength\parskip{-18pt}
-         \setlength\parsep{-18pt}
-   \fi\fi\fi\def\makelabel
-  }
- {}
- {}
