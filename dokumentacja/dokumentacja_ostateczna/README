@@ -1,0 +1,39 @@
+Analiza przyczyn wypadków drogowych
+=============================
+
+Projekt dotyczący analizy przyczyn śmiertelnych wypadków drogowych z wykorzystaniem danych z USA i Wielkiej Brytanii.
+
+Wymagania
+---------------
+Do uruchomienia projektu potrzebny jest python, pakiet psycopg2 oraz PostgreSQL. Należy dodać ścieżkę do katalogu głównego projektu do zmiennej środowiskowej PYTHONPATH.
+
+Baza danych
+-----------------
+Baza danych z danymi z USA i Wielkiej Brytanii jest zawarta w pliku accidents.sql . Baza została stworzona w PostgreSQL.  W celu utworzenia bazy należy wywołać następujące komendy:
+
+createdb accidents
+psql -f accidents.sql -U <nazwa_użytkownika> accidents
+
+Skrypty parsujące
+------------------------
+W katalogu scripts/parsing można znaleźć zbiór skryptów, które zostały użyte do sparsowania danych.
+
+API do bazy danych
+--------------------------
+W pakiecie scripts/parsing_db_api znajdują się skrypty pozwalające na programowy dostęp do danych w bazie. 
+
+W pliku common.py można skonfigurować nazwę użytkownika bazy danych i nazwę bazy danych.
+
+accident.py - api do tabeli “accident”
+vehicle.py - api do tabeli “vehicle”
+person.py - api do tabeli “person”
+
+Skrypty analizujące dane
+---------------------------------
+W pakiecie scripts/statistics znajdują się skrypty generujące wyniki analiz przeprowadzonych w projekcie.
+
+Przykładowe dane z USA znajdują się w katalogu fars_examples a z Wielkiej Brytanii w gb_examples.
+
+Wyniki
+---------
+Wyniki przeprowadzonych analiz zostały zgromadzone w katalogach statistics i hipotheses. Katalog statistics zawiera proste statystyki nie podpięte pod zaawansowane hipotezy, katalog hipotheses zawiera wyniki pod kątem konkretnych hipotez.
