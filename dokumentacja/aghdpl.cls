@@ -96,20 +96,30 @@ Manager: & {\itshape \@manager}\\
 {\small{\MakeUppercase{\@department}}}
 \vspace*{12mm}
 
+{\small{\MakeUppercase{Wykonano w ramach:}}}
+
 {\sffamily\Large \textbf{\@thesistype}}
 \vspace*{9mm}
 
-{\sffamily\Large\itshape \@titlePL}
+{\sffamily\Large\itshape Temat D: "Analiza przyczyn wypadk{\'o}w drogowych"}
 \vspace*{1mm}
 
-{\sffamily\Large\itshape \@titleEN}
-\vspace*{38mm}
+{\MakeUppercase{Wersja: \textbf{2.58}, 05.06.2015}}
+
+\vspace*{3mm}
+
+{\sffamily\Large\itshape Dokumentacja projektowa}
+\vspace*{30mm}
 \end{center}
 
 \noindent
 {\sffamily
 \thesistable
 }
+
+\vspace*{3mm}
+
+\centerline{lopiola@student.agh.edu.pl, bskiba@student.agh.edu.pl}
 
 \vspace*{17mm}
 
